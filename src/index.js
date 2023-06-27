@@ -10,9 +10,9 @@ ReactDOM.render(
     author='Project Babbage'
     authorUrl='https://projectbabbage.com'
     description='Mint, present, and redeem loyalty points and various other types of tokens on the Bitcoin SV blockchain. Powered by Project Babbage'
-    appIcon='/favicon.ico'
+    appIcon='/BTMS-Icon.svg'
     appImages={[
-      '/icon.png'
+      '/BTMS-Icon.svg'
     ]}
   >
     <App />

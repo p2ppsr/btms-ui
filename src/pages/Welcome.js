@@ -75,10 +75,10 @@ const Welcome = () => {
 
   return (
     <div className={classes.page_wrap}>
-      <img src='/icon.png' alt='' className={classes.app_icon} />
+      <img src='/BTMS-Icon.svg' alt='' className={classes.app_icon} />
       <div className={classes.right_div}>
         <Typography variant='h1'>
-          <img className={classes.inline_icon} src='/icon.png' alt='' />
+          <img className={classes.inline_icon} src='/BTMS-Icon.svg' alt='' />
           BTMS MVP
         </Typography>
         <br></br>
