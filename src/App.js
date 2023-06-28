@@ -1,33 +1,39 @@
 import React from 'react'
-import Welcome from './pages/Welcome'
-import Theme from './Theme'
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { Typography } from '@mui/material'
+import Home from './pages/Home'
+import Mint from './pages/Mint'
+import Assets from './pages/Assets'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { CssBaseline } from '@mui/material'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#1E1E1E'
+    },
+    secondary: {
+      main: '#FFFFFF'
+    }
+  }
+})
 
 const App = () => {
   return (
-    <Theme>
-      <Router>
-        <Switch>
-          <Route exact path='/' component={Welcome} />
-          <Route
-            default component={() => (
-              <center style={{ marginTop: '2em' }}>
-                <Typography align='center' variant='h4' paragraph>
-                  Page Not Found
-                </Typography>
-                <Typography>
-                  <Link to='/'>Main menu</Link>
-                </Typography>
-              </center>
-            )}
-          />
-        </Switch>
-      </Router>
-      <ToastContainer />
-    </Theme>
+    <ThemeProvider theme={theme}>
+      <CssBaseline>
+        <Router>
+          <div>
+            <Routes>
+              <Route exact path='/' element={<Home />} />
+              <Route exact path='/mint' element={<Mint />} />
+              <Route path='/assets/:assetID' element={<Assets />} />
+              <Route path='*' element={<Home />} />
+            </Routes>
+          </div>
+        </Router>
+      </CssBaseline>
+    </ThemeProvider>
   )
 }
 
