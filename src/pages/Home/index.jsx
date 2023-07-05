@@ -12,6 +12,10 @@ const Home = () => {
   const [tokens, setTokens] = useState([{ 'assetName': 'Test', 'balance': '100', 'assetIcon': 'testing', 'assetId': '0' }, { 'assetName': 'test2', 'balance': '50', 'assetIcon': 'testing2', 'assetId': '1' }, { 'assetName': '123', 'balance': '100', 'assetIcon': 'testing', 'assetId': '134134' }, { 'assetName': 'Test', 'balance': '100', 'assetIcon': 'testing', 'assetId': '13423' }, { 'assetName': 'Test', 'balance': '100', 'assetIcon': 'testing', 'assetId': '4353' }, { 'assetName': 'Test', 'balance': '100', 'assetIcon': 'testing', 'assetId': '0' }])
   const [tokensLoading, setTokensLoading] = useState(false)
 
+  const stopRedirect = async (event) => {
+    event.stopPropagation()
+  }
+
   return (
     <div>
       <Container>
@@ -58,16 +62,20 @@ const Home = () => {
                 : (
                   <TableBody>
                     {tokens.map((token, i) => (
-                      <TableRow key={i} component={Link} to={`/assets/${token.assetId}`} className={classes.link} >
+                      <TableRow key={i} onClick={() => {
+                        window.location.href = `/assets/${token.assetId}`
+                      }} className={classes.link} >
                         <TableCell align='left'>{token.assetName}</TableCell>
                         <TableCell align='right'>{token.balance}</TableCell>
                         <TableCell align='right'>
-                          <Button component={Link} to={`/assets/${token.assetId}/send`} variant='outlined' color='secondary'>
+                          <Button component={Link} to={`/assets/${token.assetId}/send`} onClick={stopRedirect}
+                            variant='outlined' color='secondary'>
                             Send <SendIcon className={classes.send_icon} />
                           </Button>
                         </TableCell>
                         <TableCell align='right'>
-                          <Button component={Link} to={`/assets/${token.assetId}/receive`} variant='outlined' color='secondary'>
+                          <Button component={Link} to={`/assets/${token.assetId}/receive`} onClick={stopRedirect}
+                            variant='outlined' color='secondary'>
                             Receive
                           </Button>
                         </TableCell>
@@ -81,7 +89,7 @@ const Home = () => {
         <Grid container align='center' direction='column' className={classes.no_tokens}>
           {tokensLoading ? <LinearProgress color='secondary' />
             : (
-              <Grid item continer align='center'>
+              <Grid item container align='center'>
                 {tokens.length === 0 && (
                   <Grid item container direction='column' sx={{ width: '12em', paddingTop: '2em' }} rowSpacing={2}>
                     <Grid item align='center'>

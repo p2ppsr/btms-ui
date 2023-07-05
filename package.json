@@ -7,15 +7,16 @@
   "dependencies": {
     "@babbage/react-prompt": "^0.2.10",
     "@babbage/sdk": "^0.4.25",
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
-    "@mui/icons-material": "^5.11.0",
-    "@mui/material": "^5.11.8",
-    "@mui/styles": "^5.11.7",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.6",
+    "@mui/styles": "^5.13.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^6.14.0"
+    "react-router": "^5.3.4",
+    "react-router-dom": "^6.14.1",
+    "react-toastify": "^8.2.0"
   },
   "scripts": {
     "start": "webpack serve --config webpack.dev.js",
@@ -41,20 +42,20 @@
     ]
   },
   "devDependencies": {
-    "@babel/core": "^7.18.5",
-    "@babel/preset-env": "^7.18.2",
-    "@babel/preset-react": "^7.17.12",
-    "babel-loader": "^8.2.5",
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "@babel/preset-react": "^7.22.5",
+    "babel-loader": "^8.3.0",
     "copy-webpack-plugin": "^11.0.0",
-    "css-loader": "^6.7.1",
-    "html-webpack-plugin": "^5.5.0",
+    "css-loader": "^6.8.1",
+    "html-webpack-plugin": "^5.5.3",
     "node-polyfill-webpack-plugin": "^1.1.4",
-    "standard": "^17.0.0",
-    "style-loader": "^3.3.1",
+    "standard": "^17.1.0",
+    "style-loader": "^3.3.3",
     "url-loader": "^4.1.1",
-    "webpack": "^5.73.0",
+    "webpack": "^5.88.1",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.9.2",
-    "webpack-merge": "^5.8.0"
+    "webpack-dev-server": "^4.15.1",
+    "webpack-merge": "^5.9.0"
   }
 }

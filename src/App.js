@@ -15,7 +15,12 @@ const theme = createTheme({
     secondary: {
       main: '#FFFFFF'
     }
-  }
+  },
+  typography: {
+    button: {
+      textTransform: 'none'
+    }
+  },
 })
 
 const App = () => {

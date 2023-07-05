@@ -11,9 +11,6 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: '2.5em',
     paddingLeft: '2.5em'
   },
-  alert: {
-    marginBottom: '0.5em'
-  },
   no_assets: {
     paddingTop: '2.5em'
   },
