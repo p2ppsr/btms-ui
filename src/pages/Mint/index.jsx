@@ -10,26 +10,18 @@ import { Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-let checked = false
-let runValidation = false
-
-const Mint = () => {
+const Mint = ({ history }) => {
   const classes = useStyles()
   const [name, setName] = useState('')
   const [quantity, setQuantity] = useState('')
   const [description, setDescription] = useState('')
   const [tags, setTags] = useState([])
+  const [checked, setChecked] = useState(false)
   const [photoURL, setPhotoURL] = useState(null)
-  const [formComplete, setFormComplete] = useState(false)
   const fileInputRef = useRef()
   const [showError, setShowError] = useState({
     name: false, quantity: false, description: false
   })
-
-  const handleChecked = (event) => {
-    checked = event.target.checked
-    runValidation = true
-  }
 
   const handlePhotoClick = () => {
     fileInputRef.current.click()
@@ -47,46 +39,43 @@ const Mint = () => {
     }
   }
 
-  useEffect(async () => {
-    if (runValidation === true) {
-      if (name.trim() === '') {
-        setShowError(prev => ({ ...prev, name: true }))
-      } else {
-        setShowError(prev => ({ ...prev, name: false }))
-      }
-      if (quantity.trim() === '' || isNaN(quantity)) {
-        setShowError(prev => ({ ...prev, quantity: true }))
-      } else {
-        setShowError(prev => ({ ...prev, quantity: false }))
-      }
-      if (description.trim() === '') {
-        setShowError(prev => ({ ...prev, description: true }))
-      } else {
-        setShowError(prev => ({ ...prev, description: false }))
-      }
-      if (showError.name == false && showError.quantity == false && showError.description == false && checked) {
-        setFormComplete(true)
-      } else {
-        setFormComplete(false)
-      }
+  useEffect(() => {
+    if (checked) {
+      setShowError(previousShowError => {
+        previousShowError.name = (name.trim() === '')
+        previousShowError.quantity = (quantity.trim() === '' || isNaN(quantity))
+        previousShowError.description = (description.trim() === '')
+        return previousShowError
+      })
     }
-  }, [name, quantity, description])
-
+  }, [name, description, quantity, checked])
 
   const mint = async () => {
-    try {
-      window.location.href = `/tokens/`
-    } catch (error) {
-      toast.error('Something went wrong!')
-    }
+    setShowError(previousShowError => {
+      previousShowError.name = (name.trim() === '')
+      previousShowError.quantity = (quantity.trim() === '' || isNaN(quantity))
+      previousShowError.description = (description.trim() === '')
+
+      if (Object.values(previousShowError).every(x => x === false)) {
+        try {
+          history.push('/tokens/')
+        } catch (error) {
+          toast.error('Something went wrong!')
+        }
+      }
+      return previousShowError
+    })
   }
+
+  const noErrors = showError.name === false && showError.quantity === false && showError.description === false && checked
 
   return (
     <div>
       <Container sx={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr'
-      }}>
+      }}
+      >
         <Grid container>
           <Grid item className={classes.button}>
             <Button component={Link} to='/' color='secondary'>
@@ -94,12 +83,14 @@ const Mint = () => {
             </Button>
           </Grid>
         </Grid>
-        <Grid container sx={{
-          display: 'grid',
-          gridColumn: '2'
-        }}>
+        <Grid
+          container sx={{
+            display: 'grid',
+            gridColumn: '2'
+          }}
+        >
           <Grid container>
-            <Grid item className={classes.title} >
+            <Grid item className={classes.title}>
               <Typography variant='h4' sx={{ fontWeight: 'bold' }}>
                 Mint a Token
               </Typography>
@@ -112,10 +103,12 @@ const Mint = () => {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <TextField placeholder='Give your token an original name'
+                  <TextField
+                    placeholder='Give your token an original name'
                     variant='standard' color='secondary' multiline fullWidth
                     error={showError.name} helperText={showError.name == true ? 'Enter a name for the token!' : 'Required'} required
-                    onChange={(e) => setName(e.target.value)} />
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </Grid>
               </Grid>
               <Grid item container direction='column' className={classes.form}>
@@ -126,31 +119,33 @@ const Mint = () => {
                 </Grid>
                 <Grid item container>
                   <Paper elevation={8} className={classes.photo_container}>
-                    {photoURL ? (
-                      <Grid item className={classes.photo_preview}>
-                        <img
-                          src={photoURL}
-                          className={classes.photo_preview_img}
-                          alt='preview'
-                        />
-                      </Grid>
-                    ) : (
-                      <Grid item>
-                        <IconButton
-                          color='secondary'
-                          onClick={handlePhotoClick}
-                        >
-                          <AddAPhotoIcon />
-                          <input
-                            type='file'
-                            accept='.png, .svg, .jpeg, .jpg'
-                            style={{ display: 'none' }}
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
+                    {photoURL
+                      ? (
+                        <Grid item className={classes.photo_preview}>
+                          <img
+                            src={photoURL}
+                            className={classes.photo_preview_img}
+                            alt='preview'
                           />
-                        </IconButton>
-                      </Grid>
-                    )}
+                        </Grid>
+                        )
+                      : (
+                        <Grid item>
+                          <IconButton
+                            color='secondary'
+                            onClick={handlePhotoClick}
+                          >
+                            <AddAPhotoIcon />
+                            <input
+                              type='file'
+                              accept='.png, .svg, .jpeg, .jpg'
+                              style={{ display: 'none' }}
+                              ref={fileInputRef}
+                              onChange={handleFileChange}
+                            />
+                          </IconButton>
+                        </Grid>
+                        )}
                   </Paper>
                 </Grid>
               </Grid>
@@ -166,7 +161,8 @@ const Mint = () => {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <TextField placeholder='Quantity' value={quantity}
+                  <TextField
+                    placeholder='Quantity' value={quantity}
                     variant='standard' color='secondary' fullWidth required
                     error={showError.quantity} helperText={showError.quantity == true ? 'Enter a quantity for the max number of tokens!' : 'Required'}
                     onChange={(e) => setQuantity(e.target.value.replace(/\D/g, ''))}
@@ -180,10 +176,12 @@ const Mint = () => {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <TextField placeholder='Give your token a fitting description'
+                  <TextField
+                    placeholder='Give your token a fitting description'
                     multiline variant='standard' color='secondary' fullWidth
                     error={showError.description} helperText={showError.description == true ? 'Enter a description for the token!' : 'Required'} required
-                    onChange={(e) => setDescription(e.target.value)} />
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
                 </Grid>
               </Grid>
               <Grid item container direction='column' className={classes.form}>
@@ -193,9 +191,11 @@ const Mint = () => {
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <TextField placeholder='e.g. art, music, literature, etc'
+                  <TextField
+                    placeholder='e.g. art, music, literature, etc'
                     multiline variant='standard' color='secondary' fullWidth
-                    onChange={(e) => setTags(e.target.value)} />
+                    onChange={(e) => setTags(e.target.value)}
+                  />
                 </Grid>
               </Grid>
             </Grid>
@@ -210,12 +210,12 @@ const Mint = () => {
               <Paper elevation={8}>
                 <Grid container direction='column' sx={{ padding: '2.5em' }} rowGap='0.5em'>
                   <Grid item>
-                    <Typography sx={{ wordBreak: "break-word" }}>
+                    <Typography sx={{ wordBreak: 'break-word' }}>
                       Token Name: {name}
                     </Typography>
                   </Grid>
                   <Grid item>
-                    <Typography sx={{ wordBreak: "break-word" }}>
+                    <Typography sx={{ wordBreak: 'break-word' }}>
                       Token Description: {description}
                     </Typography>
                   </Grid>
@@ -230,10 +230,18 @@ const Mint = () => {
           </Grid>
           <Grid container direction='column' className={classes.form}>
             <Grid item>
-              <FormControlLabel color='secondary' required control={<Checkbox color='secondary' onChange={handleChecked} />} label='I am aware and agree that the token creation will broadcast on the BSV blockchain when I approve this transaction, and it won’t be reversible.' />
+              <FormControlLabel
+                color='secondary'
+                required
+                control={<Checkbox
+                  color='secondary'
+                  onChange={e => setChecked(c => !c)}
+                         />}
+                label='I am aware and agree that the token creation will broadcast on the BSV blockchain when I approve this transaction, and it won’t be reversible.'
+              />
             </Grid>
             <Grid item align='right' className={classes.button}>
-              <Button variant='outlined' color='secondary' disabled={!formComplete} onClick={mint}>Create</Button>
+              <Button variant='outlined' color='secondary' disabled={!noErrors} onClick={mint}>Create</Button>
             </Grid>
             <Grid item>
               <ToastContainer />
@@ -241,7 +249,7 @@ const Mint = () => {
           </Grid>
         </Grid>
       </Container>
-    </div >
+    </div>
   )
 }
 

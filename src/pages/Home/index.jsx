@@ -12,7 +12,7 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 
 const Home = () => {
   const classes = useStyles()
-  const [tokens, setTokens] = useState([{ 'tokenName': 'Test', 'balance': '100', 'tokenIcon': 'testing', 'tokenId': '0' }, { 'tokenName': 'test2', 'balance': '50', 'tokenIcon': 'testing2', 'tokenId': '1' }, { 'tokenName': '123', 'balance': '100', 'tokenIcon': 'testing', 'tokenId': '134134' }, { 'tokenName': 'Test', 'balance': '100', 'tokenIcon': 'testing', 'tokenId': '13423' }, { 'tokenName': 'Test', 'balance': '100', 'tokenIcon': 'testing', 'tokenId': '4353' }, { 'tokenName': 'Test', 'balance': '100', 'tokenIcon': 'testing', 'tokenId': '0' }])
+  const [tokens, setTokens] = useState([{ tokenName: 'Test', balance: '100', tokenIcon: 'testing', tokenId: '0' }, { tokenName: 'test2', balance: '50', tokenIcon: 'testing2', tokenId: '1' }, { tokenName: '123', balance: '100', tokenIcon: 'testing', tokenId: '134134' }, { tokenName: 'Test', balance: '100', tokenIcon: 'testing', tokenId: '13423' }, { tokenName: 'Test', balance: '100', tokenIcon: 'testing', tokenId: '4353' }, { tokenName: 'Test', balance: '100', tokenIcon: 'testing', tokenId: '0' }])
   const [tokensLoading, setTokensLoading] = useState(false)
   const [openSend, setOpenSend] = useState(false)
   const [openReceive, setOpenReceive] = useState(false)
@@ -23,16 +23,15 @@ const Home = () => {
   })
   const [tokenKey, setTokenKey] = useState('')
   const [incomingTransactions, setIncomingTransactions] = useState(true)
-  const [transactions, setTransactions] = useState([{ 'transactionName': 'Test', 'transactionQuantity': '10', 'counterparty': '654321', 'txid': '678' }])
-
+  const [transactions, setTransactions] = useState([{ transactionName: 'Test', transactionQuantity: '10', counterparty: '654321', txid: '678' }])
 
   let identityKey = ''
-  const getIdentityKey = (async () => {
+  const getIdentityKey = async () => {
     try {
       identityKey = await window.BabbageSDK.getPublicKey()
     } catch (error) {
     }
-  })
+  }
 
   const refresh = () => {
 
@@ -146,7 +145,8 @@ const Home = () => {
                   <TableCell align='right' sx={{ fontWeight: 'bold' }}>Receive</TableCell>
                 </TableRow>
               </TableHead>
-              {tokensLoading ? <TableBody><TableRow></TableRow></TableBody>
+              {tokensLoading
+                ? <TableBody><TableRow /></TableBody>
                 : (
                   <TableBody>
                     {tokens.map((token, i) => {
@@ -158,28 +158,35 @@ const Home = () => {
                         setTokenKey(token)
                         handleReceiveOpen(event)
                       }
-                      return (<TableRow key={i} onClick={() => {
-                        window.location.href = `/tokens/${token.tokenId}`
-                      }} className={classes.link}>
-                        <TableCell align='left'>{token.tokenName}</TableCell>
-                        <TableCell align='right'>{token.balance}</TableCell>
-                        <TableCell align='right'>
-                          <Button onClick={defineSendToken}
-                            variant='outlined' color='secondary'>
-                            Send <SendIcon className={classes.send_icon} />
+                      return (
+                        <TableRow
+                          key={i} onClick={() => {
+                            window.location.href = `/tokens/${token.tokenId}`
+                          }} className={classes.link}
+                        >
+                          <TableCell align='left'>{token.tokenName}</TableCell>
+                          <TableCell align='right'>{token.balance}</TableCell>
+                          <TableCell align='right'>
+                            <Button
+                              onClick={defineSendToken}
+                              variant='outlined' color='secondary'
+                            >
+                              Send <SendIcon className={classes.send_icon} />
+                            </Button>
+                          </TableCell>
+                          <TableCell align='right'>
+                            <Button
+                              onClick={defineReceiveToken}
+                              variant='outlined' color='secondary'
+                            >
+                              Receive
                           </Button>
-                        </TableCell>
-                        <TableCell align='right'>
-                          <Button onClick={defineReceiveToken}
-                            variant='outlined' color='secondary'>
-                            Receive
-                          </Button>
-                        </TableCell>
-                      </TableRow>
+                          </TableCell>
+                        </TableRow>
                       )
                     })}
                   </TableBody>
-                )}
+                  )}
             </Table>
           </TableContainer>
           <Grid item container align='center' direction='column'>
@@ -195,7 +202,8 @@ const Home = () => {
                   <Typography variant='h8'>
                     Get this from the person who will receive the token
                   </Typography>
-                  <TextField className={classes.form} value={recipient}
+                  <TextField
+                    className={classes.form} value={recipient}
                     variant='outlined' color='secondary' fullWidth
                     error={showError.recipient} helperText={showError.recipient == true ? 'Enter recipient identity key!' : 'Required'}
                     onChange={(e) => setRecipient(e.target.value.replace(/[^0-9a-f]/gi, ''))}
@@ -203,7 +211,8 @@ const Home = () => {
                   <Typography variant='h6' className={classes.sub_title}>
                     Quantity:
                   </Typography>
-                  <TextField className={classes.form} value={quantity}
+                  <TextField
+                    className={classes.form} value={quantity}
                     variant='outlined' color='secondary' fullWidth
                     error={showError.quantity} helperText={showError.quantity == true ? 'Enter a quantity of tokens to send!' : 'Required'}
                     onChange={(e) => setQuantity(e.target.value.replace(/\D/g, ''))}
@@ -235,7 +244,7 @@ const Home = () => {
                       </Typography>
                     </Grid>
                     <Grid item container className={classes.row_container}>
-                      <Grid item align='left' >
+                      <Grid item align='left'>
                         <Paper elevation={8}>
                           <Typography>
                             {identityKey}
@@ -243,8 +252,10 @@ const Home = () => {
                         </Paper>
                       </Grid>
                       <Grid item sx={{ display: 'grid', justifyContent: 'right' }}>
-                        <Button onClick={copyIdentity}
-                          color='secondary'>
+                        <Button
+                          onClick={copyIdentity}
+                          color='secondary'
+                        >
                           <ContentCopyIcon className={classes.button} />
                         </Button>
                       </Grid>
@@ -274,14 +285,18 @@ const Home = () => {
                                   <TableCell align='left'>{transaction.transactionQuantity}</TableCell>
                                   <TableCell align='left'>{transaction.transactionName}</TableCell>
                                   <TableCell align='right'>
-                                    <Button onClick={handleAccept}
-                                      variant='outlined' color='secondary'>
+                                    <Button
+                                      onClick={handleAccept}
+                                      variant='outlined' color='secondary'
+                                    >
                                       Accept
                                     </Button>
                                   </TableCell>
                                   <TableCell align='right'>
-                                    <Button onClick={handleRefund}
-                                      variant='outlined' color='secondary'>
+                                    <Button
+                                      onClick={handleRefund}
+                                      variant='outlined' color='secondary'
+                                    >
                                       Refund
                                     </Button>
                                   </TableCell>
@@ -305,7 +320,8 @@ const Home = () => {
           </Grid>
         </Grid>
         <Grid container align='center' direction='column' className={classes.no_tokens}>
-          {tokensLoading ? <LinearProgress color='secondary' />
+          {tokensLoading
+            ? <LinearProgress color='secondary' />
             : (
               <Grid item container align='center' justifyContent='center'>
                 {tokens.length === 0 && (
@@ -326,10 +342,10 @@ const Home = () => {
                   </Grid>
                 )}
               </Grid>
-            )}
+              )}
         </Grid>
       </Container>
-    </div >
+    </div>
   )
 }
 
