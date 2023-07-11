@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import SDK from '@babbage/sdk'
 import useStyles from './home-style'
+import { ToastContainer, toast } from 'react-toastify'
 import {
   Grid, Typography, Button, LinearProgress, TableContainer,
   Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia,
@@ -18,20 +20,9 @@ const Home = () => {
   const [openReceive, setOpenReceive] = useState(false)
   const [quantity, setQuantity] = useState('')
   const [recipient, setRecipient] = useState('')
-  const [showError, setShowError] = useState({
-    recipient: false, quantity: false
-  })
   const [tokenKey, setTokenKey] = useState('')
   const [incomingTransactions, setIncomingTransactions] = useState(true)
   const [transactions, setTransactions] = useState([{ transactionName: 'Test', transactionQuantity: '10', counterparty: '654321', txid: '678' }])
-
-  let identityKey = ''
-  const getIdentityKey = async () => {
-    try {
-      identityKey = await window.BabbageSDK.getPublicKey()
-    } catch (error) {
-    }
-  }
 
   const refresh = () => {
 
@@ -64,27 +55,23 @@ const Home = () => {
   }
 
   const handleSend = () => {
-    if (recipient.trim() === '') {
-      setShowError(prev => ({ ...prev, recipient: true }))
-    } else if (recipient.length < 66) {
-      setShowError(prev => ({ ...prev, recipient: true }))
-    } else {
-      setShowError(prev => ({ ...prev, recipient: false }))
-    }
-    if (quantity.trim() === '') {
-      setShowError(prev => ({ ...prev, quantity: true }))
-    } else if (quantity > tokenKey.balance) {
-      setShowError(prev => ({ ...prev, quantity: true }))
-    } else {
-      setShowError(prev => ({ ...prev, quantity: false }))
-    }
-    async () => {
-      if (showError.recipient == false && showError.quantity == false) {
+    try {
+      if (recipient.trim() === '') {
+        toast.error('Enter recipient identity key!')
+      } else if (recipient.length < 66) {
+        toast.error('The recipient identity key must be at least 66 character long!')
+      } else if (quantity.trim() === '' || isNaN(quantity)) {
+        toast.error('Enter a quantity of tokens to send!')
+      } else if (quantity > tokenKey.balance) {
+        toast.error('Oops! That is too many tokens!')
+      } else {
+        toast.success('Success!')
         setOpenSend(false)
         setTokensLoading(true)
-      } else {
-        setOpenSend(true)
       }
+    } catch (error) {
+      toast.error('Something went wrong!')
+      setOpenSend(false)
     }
   }
 
@@ -108,6 +95,9 @@ const Home = () => {
       <Container>
         <Grid container>
           <Grid item container direction='column' align='center'>
+            <Grid item>
+              <ToastContainer />
+            </Grid>
             <Grid item className={classes.title}>
               <Typography variant='h2' sx={{ fontWeight: 'bold' }}>
                 BTMS
@@ -180,13 +170,13 @@ const Home = () => {
                               variant='outlined' color='secondary'
                             >
                               Receive
-                          </Button>
+                            </Button>
                           </TableCell>
                         </TableRow>
                       )
                     })}
                   </TableBody>
-                  )}
+                )}
             </Table>
           </TableContainer>
           <Grid item container align='center' direction='column'>
@@ -205,7 +195,7 @@ const Home = () => {
                   <TextField
                     className={classes.form} value={recipient}
                     variant='outlined' color='secondary' fullWidth
-                    error={showError.recipient} helperText={showError.recipient == true ? 'Enter recipient identity key!' : 'Required'}
+                    helperText={'Required'}
                     onChange={(e) => setRecipient(e.target.value.replace(/[^0-9a-f]/gi, ''))}
                   />
                   <Typography variant='h6' className={classes.sub_title}>
@@ -214,7 +204,7 @@ const Home = () => {
                   <TextField
                     className={classes.form} value={quantity}
                     variant='outlined' color='secondary' fullWidth
-                    error={showError.quantity} helperText={showError.quantity == true ? 'Enter a quantity of tokens to send!' : 'Required'}
+                    helperText={'Required'}
                     onChange={(e) => setQuantity(e.target.value.replace(/\D/g, ''))}
                   />
                 </DialogContent>
@@ -247,7 +237,6 @@ const Home = () => {
                       <Grid item align='left'>
                         <Paper elevation={8}>
                           <Typography>
-                            {identityKey}
                           </Typography>
                         </Paper>
                       </Grid>
@@ -342,7 +331,7 @@ const Home = () => {
                   </Grid>
                 )}
               </Grid>
-              )}
+            )}
         </Grid>
       </Container>
     </div>

@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-const Mint = ({ history }) => {
+const Mint = () => {
   const classes = useStyles()
   const [name, setName] = useState('')
   const [quantity, setQuantity] = useState('')
@@ -19,9 +19,6 @@ const Mint = ({ history }) => {
   const [checked, setChecked] = useState(false)
   const [photoURL, setPhotoURL] = useState(null)
   const fileInputRef = useRef()
-  const [showError, setShowError] = useState({
-    name: false, quantity: false, description: false
-  })
 
   const handlePhotoClick = () => {
     fileInputRef.current.click()
@@ -39,35 +36,22 @@ const Mint = ({ history }) => {
     }
   }
 
-  useEffect(() => {
-    if (checked) {
-      setShowError(previousShowError => {
-        previousShowError.name = (name.trim() === '')
-        previousShowError.quantity = (quantity.trim() === '' || isNaN(quantity))
-        previousShowError.description = (description.trim() === '')
-        return previousShowError
-      })
-    }
-  }, [name, description, quantity, checked])
-
   const mint = async () => {
-    setShowError(previousShowError => {
-      previousShowError.name = (name.trim() === '')
-      previousShowError.quantity = (quantity.trim() === '' || isNaN(quantity))
-      previousShowError.description = (description.trim() === '')
-
-      if (Object.values(previousShowError).every(x => x === false)) {
-        try {
-          history.push('/tokens/')
-        } catch (error) {
-          toast.error('Something went wrong!')
-        }
+    try {
+      if (name.trim() === '') {
+        toast.error('Enter a name for the token!')
+      } else if (quantity.trim() === '' || isNaN(quantity)) {
+        toast.error('Enter a quantity for the max number of tokens!')
+      } else if (description.trim() === '') {
+        toast.error('Enter a description for the token!')
+      } else if (checked === true) {
+        toast.success('Success!')
+        window.location.href = `/tokens/`
       }
-      return previousShowError
-    })
+    } catch (error) {
+      toast.error('Something went wrong!')
+    }
   }
-
-  const noErrors = showError.name === false && showError.quantity === false && showError.description === false && checked
 
   return (
     <div>
@@ -106,7 +90,7 @@ const Mint = ({ history }) => {
                   <TextField
                     placeholder='Give your token an original name'
                     variant='standard' color='secondary' multiline fullWidth
-                    error={showError.name} helperText={showError.name == true ? 'Enter a name for the token!' : 'Required'} required
+                    helperText={'Required'}
                     onChange={(e) => setName(e.target.value)}
                   />
                 </Grid>
@@ -128,7 +112,7 @@ const Mint = ({ history }) => {
                             alt='preview'
                           />
                         </Grid>
-                        )
+                      )
                       : (
                         <Grid item>
                           <IconButton
@@ -145,7 +129,7 @@ const Mint = ({ history }) => {
                             />
                           </IconButton>
                         </Grid>
-                        )}
+                      )}
                   </Paper>
                 </Grid>
               </Grid>
@@ -163,8 +147,8 @@ const Mint = ({ history }) => {
                 <Grid item>
                   <TextField
                     placeholder='Quantity' value={quantity}
-                    variant='standard' color='secondary' fullWidth required
-                    error={showError.quantity} helperText={showError.quantity == true ? 'Enter a quantity for the max number of tokens!' : 'Required'}
+                    variant='standard' color='secondary' fullWidth
+                    helperText={'Required'}
                     onChange={(e) => setQuantity(e.target.value.replace(/\D/g, ''))}
                   />
                 </Grid>
@@ -179,7 +163,7 @@ const Mint = ({ history }) => {
                   <TextField
                     placeholder='Give your token a fitting description'
                     multiline variant='standard' color='secondary' fullWidth
-                    error={showError.description} helperText={showError.description == true ? 'Enter a description for the token!' : 'Required'} required
+                    helperText={'Required'}
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </Grid>
@@ -236,12 +220,12 @@ const Mint = ({ history }) => {
                 control={<Checkbox
                   color='secondary'
                   onChange={e => setChecked(c => !c)}
-                         />}
+                />}
                 label='I am aware and agree that the token creation will broadcast on the BSV blockchain when I approve this transaction, and it won’t be reversible.'
               />
             </Grid>
             <Grid item align='right' className={classes.button}>
-              <Button variant='outlined' color='secondary' disabled={!noErrors} onClick={mint}>Create</Button>
+              <Button variant='outlined' color='secondary' onClick={mint}>Create</Button>
             </Grid>
             <Grid item>
               <ToastContainer />
