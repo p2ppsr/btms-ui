@@ -16,7 +16,7 @@ let runValidation = false
 const Mint = () => {
   const classes = useStyles()
   const [name, setName] = useState('')
-  const [quantity, setQuantity] = useState()
+  const [quantity, setQuantity] = useState('')
   const [description, setDescription] = useState('')
   const [tags, setTags] = useState([])
   const [photoURL, setPhotoURL] = useState(null)
@@ -50,13 +50,11 @@ const Mint = () => {
   useEffect(async () => {
     if (runValidation === true) {
       if (name.trim() === '') {
-        console.log('check name')
         setShowError(prev => ({ ...prev, name: true }))
-        console.log(showError.name)
       } else {
         setShowError(prev => ({ ...prev, name: false }))
       }
-      if (!quantity) {
+      if (quantity.trim() === '' || isNaN(quantity)) {
         setShowError(prev => ({ ...prev, quantity: true }))
       } else {
         setShowError(prev => ({ ...prev, quantity: false }))
@@ -66,7 +64,7 @@ const Mint = () => {
       } else {
         setShowError(prev => ({ ...prev, description: false }))
       }
-      if (!showError.name && !showError.quantity && !showError.description && checked) {
+      if (showError.name == false && showError.quantity == false && showError.description == false && checked) {
         setFormComplete(true)
       } else {
         setFormComplete(false)
@@ -77,7 +75,7 @@ const Mint = () => {
 
   const mint = async () => {
     try {
-      window.location.href = `/assets/`
+      window.location.href = `/tokens/`
     } catch (error) {
       toast.error('Something went wrong!')
     }
@@ -171,7 +169,7 @@ const Mint = () => {
                   <TextField placeholder='Quantity' value={quantity}
                     variant='standard' color='secondary' fullWidth required
                     error={showError.quantity} helperText={showError.quantity == true ? 'Enter a quantity for the max number of tokens!' : 'Required'}
-                    onChange={(e) => setQuantity(e.target.value.replace(/\D/g, ""))}
+                    onChange={(e) => setQuantity(e.target.value.replace(/\D/g, ''))}
                   />
                 </Grid>
               </Grid>

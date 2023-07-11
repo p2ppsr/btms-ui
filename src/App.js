@@ -1,7 +1,7 @@
 import React from 'react'
 import Home from './pages/Home'
 import Mint from './pages/Mint'
-import Assets from './pages/Assets'
+import Tokens from './pages/Tokens'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { CssBaseline } from '@mui/material'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -32,7 +32,8 @@ const App = () => {
             <Routes>
               <Route exact path='/' element={<Home />} />
               <Route exact path='/mint' element={<Mint />} />
-              <Route path='/assets/:assetID' element={<Assets />} />
+              <Route exact path='/tokens' element={<Tokens />} />
+              <Route path='/tokens/:tokenID' element={<Tokens />} />
               <Route path='*' element={<Home />} />
             </Routes>
           </div>
