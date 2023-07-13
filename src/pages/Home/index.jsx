@@ -14,7 +14,7 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 
 const Home = () => {
   const classes = useStyles()
-  const [tokens, setTokens] = useState([{ tokenName: 'Test', balance: '100', tokenIcon: 'testing', tokenId: '0' }, { tokenName: 'test2', balance: '50', tokenIcon: 'testing2', tokenId: '1' }, { tokenName: '123', balance: '100', tokenIcon: 'testing', tokenId: '134134' }, { tokenName: 'Test3', balance: '100', tokenIcon: 'testing', tokenId: '13423' }, { tokenName: 'Test4', balance: '100', tokenIcon: 'testing', tokenId: '4353' }, { tokenName: 'Test', balance: '100', tokenIcon: 'testing', tokenId: '0' }])
+  const [tokens, setTokens] = useState([{ tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: '0' }, { tokenName: 'test2', balance: '50', tokenIcon: '/favicon.svg', tokenId: '1' }, { tokenName: '123', balance: '100', tokenIcon: '/favicon.svg', tokenId: '134134' }, { tokenName: 'Test3', balance: '100', tokenIcon: '/favicon.svg', tokenId: '13423' }, { tokenName: 'Test4', balance: '100', tokenIcon: '/favicon.svg', tokenId: '4353' }, { tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: '0' }])
   const [tokensLoading, setTokensLoading] = useState(false)
   const [openSend, setOpenSend] = useState(false)
   const [openReceive, setOpenReceive] = useState(false)
@@ -23,19 +23,11 @@ const Home = () => {
   const [tokenKey, setTokenKey] = useState('')
   const [userIdentityKey, setUserIdentityKey] = useState('')
   const [incomingTransactions, setIncomingTransactions] = useState([{ transactionName: 'Test', transactionQuantity: '10', counterparty: '654321', txid: '678' }, { transactionName: '123', transactionQuantity: '80', counterparty: '123', txid: '2' }, { transactionName: 'Test', transactionQuantity: '3', counterparty: '654321', txid: '5' }])
-  let transactions = []
 
   useEffect(async () => {
     const key = await getPublicKey({ identityKey: true })
     setUserIdentityKey(key)
   }, [])
-
-  async function filterTransactions(incoming) {
-    return await incoming.map((transaction) => {
-      transaction.transactionName === tokenKey.tokenName ?
-        (transactions.push(transaction)) : (null)
-    })
-  }
 
   const refresh = () => {
     setOpenReceive(false)
@@ -49,10 +41,7 @@ const Home = () => {
 
   const handleReceiveOpen = (event) => {
     event.stopPropagation()
-    transactions = []
-    filterTransactions(incomingTransactions).then(setOpenReceive(true))
-    console.log(transactions, 'receive open')
-    console.log(incomingTransactions.length, transactions.length)
+    setOpenReceive(true)
   }
 
   const handleSendCancel = () => {
@@ -137,7 +126,7 @@ const Home = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell align='left' sx={{ fontWeight: 'bold' }}>Token</TableCell>
+                  <TableCell align='left' sx={{ fontWeight: 'bold' }} colSpan={2}>Token</TableCell>
                   <TableCell align='right' sx={{ fontWeight: 'bold' }}>Balance</TableCell>
                   <TableCell align='right' sx={{ fontWeight: 'bold' }}>Send</TableCell>
                   <TableCell align='right' sx={{ fontWeight: 'bold' }}>Receive</TableCell>
@@ -162,7 +151,12 @@ const Home = () => {
                             window.location.href = `/tokens/${token.tokenId}`
                           }} className={classes.link}
                         >
-                          <TableCell align='left'>{token.tokenName}</TableCell>
+                          <TableCell align='left' style={{ width: '0.1em' }}>
+                            <img src={token.tokenIcon} style={{ height: '2em' }} />
+                          </TableCell>
+                          <TableCell align='left'>
+                            {token.tokenName}
+                          </TableCell>
                           <TableCell align='right'>{token.balance}</TableCell>
                           <TableCell align='right'>
                             <Button
@@ -273,7 +267,7 @@ const Home = () => {
                     <Divider variant='middle' style={{ background: 'white' }} />
                   </Grid>
                   <Grid item container>
-                    {incomingTransactions.length >= 1 && console.log(transactions, '>=1?') && transactions.length >= 1
+                    {incomingTransactions.length >= 1
                       ? (
                         <TableContainer>
                           <Table>
@@ -286,11 +280,11 @@ const Home = () => {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {transactions.map((transact, i) => {
+                              {incomingTransactions.map((transaction, i) => {
                                 return (
                                   <TableRow key={i}>
-                                    <TableCell align='left'>{transact.transactionQuantity}</TableCell>
-                                    <TableCell align='left'>{transact.transactionName}</TableCell>
+                                    <TableCell align='left'>{transaction.transactionQuantity}</TableCell>
+                                    <TableCell align='left'>{transaction.transactionName}</TableCell>
                                     <TableCell align='right'>
                                       <Button
                                         onClick={handleAccept}
