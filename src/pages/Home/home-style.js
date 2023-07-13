@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
   row_container: {
     display: 'grid !important',
     paddingTop: '0.25em !important',
+    paddingBottom: '1em',
     gridTemplateColumns: 'auto 1fr',
     gridColumnGap: '1.5em',
   },
