@@ -32,7 +32,6 @@ const App = () => {
             <Routes>
               <Route exact path='/' element={<Home />} />
               <Route exact path='/mint' element={<Mint />} />
-              <Route exact path='/tokens' element={<Tokens />} />
               <Route path='/tokens/:tokenID' element={<Tokens />} />
               <Route path='*' element={<Home />} />
             </Routes>

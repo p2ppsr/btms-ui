@@ -12,7 +12,7 @@ ReactDOM.render(
     description='Mint, present, and redeem loyalty points and various other types of tokens on the Bitcoin SV blockchain. Powered by Project Babbage'
     appIcon='/BTMS-Icon.svg'
     appImages={[
-      '/BTMS-Icon.svg'
+      '/start-page.svg'
     ]}
   >
     <App />

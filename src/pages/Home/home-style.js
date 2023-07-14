@@ -21,23 +21,6 @@ const useStyles = makeStyles((theme) => ({
   send_icon: {
     paddingLeft: '0.3em'
   },
-  button: {
-    marginBottom: '0.9em',
-    marginRight: '0.9em'
-  },
-  identity_key: {
-    marign: '0.9em'
-  },
-  form: {
-    marginTop: '0.25em !important'
-  },
-  row_container: {
-    display: 'grid !important',
-    paddingTop: '0.25em !important',
-    paddingBottom: '1em',
-    gridTemplateColumns: 'auto 1fr',
-    gridColumnGap: '1.5em',
-  },
 }));
 
 export default useStyles;

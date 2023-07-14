@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getPublicKey } from '@babbage/sdk'
 import useStyles from './home-style'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import {
   Grid, Typography, Button, LinearProgress, TableContainer,
-  Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia,
-  Dialog, DialogActions, DialogContent, Paper, DialogTitle, TextField, Divider, Badge
+  Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia, Badge
 } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import RefreshIcon from '@mui/icons-material/Refresh'
+import Send from '../../components/Send'
+import Receive from '../../components/Receive'
 
 const Home = () => {
   const classes = useStyles()
@@ -18,21 +16,8 @@ const Home = () => {
   const [tokensLoading, setTokensLoading] = useState(false)
   const [openSend, setOpenSend] = useState(false)
   const [openReceive, setOpenReceive] = useState(false)
-  const [quantity, setQuantity] = useState('')
-  const [recipient, setRecipient] = useState('')
   const [tokenKey, setTokenKey] = useState('')
-  const [userIdentityKey, setUserIdentityKey] = useState('')
   const [incomingTransactions, setIncomingTransactions] = useState([{ transactionName: 'Test', transactionQuantity: '10', counterparty: '654321', txid: '678' }, { transactionName: '123', transactionQuantity: '80', counterparty: '123', txid: '2' }, { transactionName: 'Test', transactionQuantity: '3', counterparty: '654321', txid: '5' }])
-
-  useEffect(async () => {
-    const key = await getPublicKey({ identityKey: true })
-    setUserIdentityKey(key)
-  }, [])
-
-  const refresh = () => {
-    setOpenReceive(false)
-    setTokens([])
-  }
 
   const handleSendOpen = (event) => {
     event.stopPropagation()
@@ -42,49 +27,6 @@ const Home = () => {
   const handleReceiveOpen = (event) => {
     event.stopPropagation()
     setOpenReceive(true)
-  }
-
-  const handleSendCancel = () => {
-    setQuantity('')
-    setRecipient('')
-    setOpenSend(false)
-  }
-
-  const handleReceiveCancel = () => {
-    setQuantity('')
-    setRecipient('')
-    setOpenReceive(false)
-  }
-
-  const handleSend = () => {
-    try {
-      if (recipient.trim() === '') {
-        toast.error('Enter recipient identity key!')
-      } else if (recipient.length < 66) {
-        toast.error('The recipient identity key must be at least 66 character long!')
-      } else if (quantity.trim() === '' || isNaN(quantity)) {
-        toast.error('Enter a quantity of tokens to send!')
-      } else if (quantity > tokenKey.balance) {
-        toast.error('Oops! That is too many tokens!')
-      } else {
-        toast.success('Success!')
-        setOpenSend(false)
-        setTokensLoading(true)
-      }
-    } catch (error) {
-      toast.error('Something went wrong!')
-      setOpenSend(false)
-    }
-  }
-
-  const handleAccept = () => {
-    setIncomingTransactions(incomingTransactions.filter((item) => item.transactionName !== tokenKey.tokenName))
-    setOpenReceive(false)
-  }
-
-  const handleRefund = () => {
-    setIncomingTransactions(incomingTransactions.filter((item) => item.transactionName !== tokenKey.tokenName))
-    setOpenReceive(false)
   }
 
   return (
@@ -183,143 +125,20 @@ const Home = () => {
                 )}
             </Table>
           </TableContainer>
-          <Grid item container align='center' direction='column'>
-            <Dialog open={openSend} onClose={handleSendCancel} color='primary'>
-              <DialogTitle variant='h4' sx={{ fontWeight: 'bold' }}>
-                Send {tokenKey.tokenName}
-              </DialogTitle>
-              <DialogContent>
-                <Typography variant='h6'>
-                  Recipient Identity Key:
-                </Typography>
-                <Typography variant='h8'>
-                  Get this from the person who will receive the token
-                </Typography>
-                <TextField
-                  className={classes.form} value={recipient}
-                  variant='outlined' color='secondary' fullWidth
-                  helperText={'Required'}
-                  onChange={(e) => setRecipient(e.target.value.replace(/[^0-9a-f]/gi, ''))}
-                />
-                <Typography variant='h6' className={classes.sub_title}>
-                  Quantity:
-                </Typography>
-                <TextField
-                  className={classes.form} value={quantity}
-                  variant='outlined' color='secondary' fullWidth
-                  helperText={'Required'}
-                  onChange={(e) => setQuantity(e.target.value.replace(/\D/g, ''))}
-                />
-              </DialogContent>
-              <DialogActions className={classes.button}>
-                <Button color='secondary' variant='outlined' onClick={handleSendCancel}>Cancel</Button>
-                <Button color='secondary' variant='outlined' onClick={handleSend}>Send Now</Button>
-              </DialogActions>
-            </Dialog>
-          </Grid>
-          <Grid item container align='center' direction='column'>
-            <Dialog open={openReceive} onClose={handleReceiveCancel} color='primary'>
-              <DialogTitle variant='h4' sx={{ fontWeight: 'bold' }}>
-                Receive {tokenKey.tokenName}
-              </DialogTitle>
-              <DialogContent>
-                <Grid item container direction='column'>
-                  <Grid item>
-                    <Typography variant='h6'>
-                      Your Identity Key:
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant='h8'>
-                      Give this to the person sending you the tokens
-                    </Typography>
-                  </Grid>
-                  <Grid item container className={classes.row_container}>
-                    <Grid item align='left'>
-                      <Paper elevation={8} style={{ overflow: 'scroll', width: '30rem' }}>
-                        <Typography>
-                          {userIdentityKey}
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                    <Grid item sx={{ display: 'grid', justifyContent: 'right' }}>
-                      <Button
-                        onClick={() => { navigator.clipboard.writeText(userIdentityKey) }}
-                        color='secondary'
-                      >
-                        <ContentCopyIcon />
-                      </Button>
-                    </Grid>
-                  </Grid>
-                  <Grid item container className={classes.row_container}>
-                    <Grid item>
-                      <Typography variant='h6' style={{ width: '30rem' }}>
-                        Incoming Transactions:
-                      </Typography>
-                    </Grid>
-                    <Grid item sx={{ display: 'grid', justifyContent: 'right' }}>
-                      <Button color='secondary' onClick={refresh}>
-                        <RefreshIcon />
-                      </Button>
-                    </Grid>
-                  </Grid>
-                  <Grid item>
-                    <Divider variant='middle' style={{ background: 'white' }} />
-                  </Grid>
-                  <Grid item container>
-                    {incomingTransactions.length >= 1
-                      ? (
-                        <TableContainer>
-                          <Table>
-                            <TableHead>
-                              <TableRow>
-                                <TableCell align='left'>Quantity</TableCell>
-                                <TableCell align='left'>Token</TableCell>
-                                <TableCell align='right'>Accept</TableCell>
-                                <TableCell align='right'>Refund</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {incomingTransactions.map((transaction, i) => {
-                                return (
-                                  <TableRow key={i}>
-                                    <TableCell align='left'>{transaction.transactionQuantity}</TableCell>
-                                    <TableCell align='left'>{transaction.transactionName}</TableCell>
-                                    <TableCell align='right'>
-                                      <Button
-                                        onClick={handleAccept}
-                                        variant='outlined' color='secondary'
-                                      >
-                                        Accept
-                                      </Button>
-                                    </TableCell>
-                                    <TableCell align='right'>
-                                      <Button
-                                        onClick={handleRefund}
-                                        variant='outlined' color='secondary'
-                                      >
-                                        Refund
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                )
-                              })}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>)
-                      : (
-                        <Grid item container align='center' justifyContent='center' className={classes.no_tokens}>
-                          <Grid item>
-                            <Typography color='grey'>
-                              Incoming transactions will appear here...
-                            </Typography>
-                          </Grid>
-                        </Grid>)}
-                  </Grid>
-                </Grid>
-              </DialogContent>
-            </Dialog>
-          </Grid>
+          <Send
+            openSend={openSend}
+            setOpenSend={setOpenSend}
+            tokenKey={tokenKey}
+            setTokensLoading={setTokensLoading}
+          />
+          <Receive
+            setTokens={setTokens}
+            openReceive={openReceive}
+            setOpenReceive={setOpenReceive}
+            tokenKey={tokenKey}
+            incomingTransactions={incomingTransactions}
+            setIncomingTransactions={setIncomingTransactions}
+          />
         </Grid>
         <Grid container align='center' direction='column' className={classes.no_tokens}>
           {tokensLoading
