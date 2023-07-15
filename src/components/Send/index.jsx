@@ -5,14 +5,10 @@ import {
   Grid, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField,
 } from '@mui/material'
 
-const Send = (props) => {
+const Send = ({ openSend, setOpenSend, tokenKey, setTokensLoading }) => {
   const classes = useStyles()
   const [recipient, setRecipient] = useState('')
   const [quantity, setQuantity] = useState('')
-  const openSend = props.openSend
-  const setOpenSend = props.setOpenSend
-  const tokenKey = props.tokenKey
-  const setTokensLoading = props.setTokensLoading
 
   const handleSendCancel = () => {
     setQuantity('')

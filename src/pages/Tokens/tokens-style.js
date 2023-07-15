@@ -2,7 +2,7 @@ import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
   title: {
-    paddingTop: '5.5em'
+    paddingBottom: '0.5em'
   },
   sub_title: {
     paddingTop: '0.5em',

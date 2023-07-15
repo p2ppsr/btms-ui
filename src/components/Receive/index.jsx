@@ -9,17 +9,12 @@ import {
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import RefreshIcon from '@mui/icons-material/Refresh'
 
-const Receive = (props) => {
+const Receive = ({ setTokens, openReceive, setOpenReceive, tokenKey,
+  incomingTransactions, setIncomingTransactions }) => {
   const classes = useStyles()
-  const setTokens = props.setTokens
-  const openReceive = props.openReceive
-  const setOpenReceive = props.setOpenReceive
   const [quantity, setQuantity] = useState('')
   const [recipient, setRecipient] = useState('')
-  const tokenKey = props.tokenKey
   const [userIdentityKey, setUserIdentityKey] = useState('')
-  const incomingTransactions = props.incomingTransactions
-  const setIncomingTransactions = props.setIncomingTransactions
 
   useEffect(async () => {
     const key = await getPublicKey({ identityKey: true })
