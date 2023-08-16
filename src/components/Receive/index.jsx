@@ -4,49 +4,65 @@ import useStyles from './receive-style'
 import {
   Grid, Typography, Button, TableContainer,
   Table, TableHead, TableBody, TableRow, TableCell,
-  Dialog, DialogContent, Paper, DialogTitle, Divider
+  Dialog, DialogContent, Paper, DialogTitle, Divider, Badge
 } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import RefreshIcon from '@mui/icons-material/Refresh'
+import BTMS from '../../utils/BTMS'
 
-const Receive = ({ setTokens, openReceive, setOpenReceive, tokenKey,
-  incomingTransactions, setIncomingTransactions }) => {
+const Receive = ({ assetId, asset, badge }) => {
   const classes = useStyles()
-  const [quantity, setQuantity] = useState('')
-  const [recipient, setRecipient] = useState('')
   const [userIdentityKey, setUserIdentityKey] = useState('')
+  const [incomingTransactions, setIncomingTransactions] = useState([])
+  const [open, setOpen] = useState(false)
 
-  useEffect(async () => {
-    const key = await getPublicKey({ identityKey: true })
-    setUserIdentityKey(key)
+  useEffect(() => {
+    (async () => {
+      const key = await getPublicKey({ identityKey: true })
+      setUserIdentityKey(key)
+    })()
   }, [])
 
-  const refresh = () => {
-    setOpenReceive(false)
-    setTokens([])
+  useEffect(() => {
+    (async () => {
+      if (assetId) {
+        const incoming = await BTMS.listIncomingPayments(assetId)
+        setIncomingTransactions(incoming)
+      }
+    })()
+  }, [assetId])
+
+  const refresh = async () => {
+    const incoming = await BTMS.listIncomingPayments(assetId)
+    setIncomingTransactions(incoming)
   }
 
-  const handleReceiveCancel = () => {
-    setQuantity('')
-    setRecipient('')
-    setOpenReceive(false)
+  const handleAccept = async (payment) => {
+    await BTMS.acceptIncomingPayment(assetId, payment)
+    setOpen(false)
   }
 
-  const handleAccept = () => {
-    setIncomingTransactions(incomingTransactions.filter((item) => item.transactionName !== tokenKey.tokenName))
-    setOpenReceive(false)
-  }
-
-  const handleRefund = () => {
-    setIncomingTransactions(incomingTransactions.filter((item) => item.transactionName !== tokenKey.tokenName))
-    setOpenReceive(false)
+  const handleRefund = async (payment) => {
+    await BTMS.refundIncomingTransaction(assetId, payment)
+    setOpen(false)
   }
 
   return (
-    <Grid item container align='center' direction='column'>
-      <Dialog open={openReceive} onClose={handleReceiveCancel} color='primary'>
+    <>
+      <Badge color='error' variant='dot' invisible={!badge}>
+                              <Button
+          onClick={e => {
+            e.stopPropagation()
+            setOpen(true)
+          }}
+                                variant='outlined' color='secondary'
+                              >
+                                Receive
+                              </Button>
+                            </Badge>
+    <Dialog open={open} onClose={() => setOpen(false)} color='primary' fullWidth maxWidth='lg'>
         <DialogTitle variant='h4' sx={{ fontWeight: 'bold' }}>
-          Receive {tokenKey.tokenName}
+          Receive {asset ? asset.name : 'Asset'}
         </DialogTitle>
         <DialogContent>
           <Grid item container direction='column'>
@@ -100,7 +116,7 @@ const Receive = ({ setTokens, openReceive, setOpenReceive, tokenKey,
                       <TableHead>
                         <TableRow>
                           <TableCell align='left'>Quantity</TableCell>
-                          <TableCell align='left'>Token</TableCell>
+                          <TableCell align='left'>Sender</TableCell>
                           <TableCell align='right'>Accept</TableCell>
                           <TableCell align='right'>Refund</TableCell>
                         </TableRow>
@@ -109,11 +125,11 @@ const Receive = ({ setTokens, openReceive, setOpenReceive, tokenKey,
                         {incomingTransactions.map((transaction, i) => {
                           return (
                             <TableRow key={i}>
-                              <TableCell align='left'>{transaction.transactionQuantity}</TableCell>
-                              <TableCell align='left'>{transaction.transactionName}</TableCell>
+                              <TableCell align='left'>{transaction.amount}</TableCell>
+                              <TableCell align='left'>{transaction.sender}</TableCell>
                               <TableCell align='right'>
                                 <Button
-                                  onClick={handleAccept}
+                                  onClick={() => handleAccept(transaction)}
                                   variant='outlined' color='secondary'
                                 >
                                   Accept
@@ -121,7 +137,7 @@ const Receive = ({ setTokens, openReceive, setOpenReceive, tokenKey,
                               </TableCell>
                               <TableCell align='right'>
                                 <Button
-                                  onClick={handleRefund}
+                                  onClick={() => handleRefund(transaction)}
                                   variant='outlined' color='secondary'
                                 >
                                   Refund
@@ -145,7 +161,7 @@ const Receive = ({ setTokens, openReceive, setOpenReceive, tokenKey,
           </Grid>
         </DialogContent>
       </Dialog>
-    </Grid>
+      </>
   )
 }
 

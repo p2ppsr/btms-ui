@@ -99,9 +99,7 @@ const Home = () => {
                       }
                       return (
                         <TableRow
-                          key={i} onClick={() => {
-                            window.location.href = `/tokens/${token.tokenId}`
-                          }} className={classes.link}
+                          key={i} className={classes.link}
                         >
                           <TableCell align='left' style={{ width: '0.1em' }}>
                             <img src={token.tokenIcon} style={{ height: '2em' }} />
@@ -119,14 +117,7 @@ const Home = () => {
                             </Button>
                           </TableCell>
                           <TableCell align='right'>
-                            <Badge color='error' variant='dot' invisible={!Boolean(incomingTransactions.find(item => item.transactionName === token.tokenName))}>
-                              <Button
-                                onClick={defineReceiveToken}
-                                variant='outlined' color='secondary'
-                              >
-                                Receive
-                              </Button>
-                            </Badge>
+                            <Receive assetId={token.assetId} asset={token} badge={token.incoming} />
                           </TableCell>
                         </TableRow>
                       )
@@ -140,14 +131,6 @@ const Home = () => {
             setOpenSend={setOpenSend}
             tokenKey={tokenKey}
             setTokensLoading={setTokensLoading}
-          />
-          <Receive
-            setTokens={setTokens}
-            openReceive={openReceive}
-            setOpenReceive={setOpenReceive}
-            tokenKey={tokenKey}
-            incomingTransactions={incomingTransactions}
-            setIncomingTransactions={setIncomingTransactions}
           />
         </Grid>
         <Grid container align='center' direction='column' className={classes.no_tokens}>
