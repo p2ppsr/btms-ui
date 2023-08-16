@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import useStyles from './tokens-style'
 import { Link, useParams } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
 import {
   Grid, Typography, Button, TableContainer, Card, CardMedia,
   Table, TableHead, TableBody, TableRow, TableCell, Container
@@ -42,9 +41,6 @@ const Tokens = () => {
             </Button>
           </Grid>
           <Grid item container direction='column' align='center'>
-            <Grid item>
-              <ToastContainer />
-            </Grid>
             <Grid item>
               <img src={tokenKey.length ? tokenKey.map(i => i.tokenIcon).at(0) : '/BTMS-Icon.svg'} style={{ height: '10em' }} />
             </Grid>

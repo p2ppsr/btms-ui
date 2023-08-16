@@ -9,12 +9,14 @@ import {
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import BTMS from '../../utils/BTMS'
+import { toast } from 'react-toastify'
 
 const Receive = ({ assetId, asset, badge }) => {
   const classes = useStyles()
   const [userIdentityKey, setUserIdentityKey] = useState('')
   const [incomingTransactions, setIncomingTransactions] = useState([])
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     (async () => {
@@ -33,18 +35,44 @@ const Receive = ({ assetId, asset, badge }) => {
   }, [assetId])
 
   const refresh = async () => {
-    const incoming = await BTMS.listIncomingPayments(assetId)
-    setIncomingTransactions(incoming)
+    try {
+      setLoading(true)
+      const incoming = await BTMS.listIncomingPayments(assetId)
+      setIncomingTransactions(incoming)
+    } catch (error) {
+      console.error(error)
+      toast.error(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleAccept = async (payment) => {
-    await BTMS.acceptIncomingPayment(assetId, payment)
-    setOpen(false)
+    try {
+      setLoading(true)
+      await BTMS.acceptIncomingPayment(assetId, payment)
+      toast.success(`${payment.amount} ${asset.name} successfully received!`)
+      setOpen(false)
+    } catch (error) {
+      console.error(error)
+      toast.error(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleRefund = async (payment) => {
-    await BTMS.refundIncomingTransaction(assetId, payment)
-    setOpen(false)
+    try {
+      setLoading(true)
+      await BTMS.refundIncomingTransaction(assetId, payment)
+      toast.success(`You refunded ${payment.amount} ${asset.name}.`)
+      setOpen(false)
+    } catch (error) {
+      console.error(error)
+      toast.error(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -79,14 +107,17 @@ const Receive = ({ assetId, asset, badge }) => {
             <Grid item container className={classes.row_container}>
               <Grid item align='left'>
                 <Paper elevation={8} style={{ overflow: 'scroll', width: '30rem' }}>
-                  <Typography>
+                  <Typography style={{ userSelect: 'all' }}>
                     {userIdentityKey}
                   </Typography>
                 </Paper>
               </Grid>
               <Grid item sx={{ display: 'grid', justifyContent: 'right' }}>
                 <Button
-                  onClick={() => { navigator.clipboard.writeText(userIdentityKey) }}
+                  onClick={() => {
+                    navigator.clipboard.writeText(userIdentityKey)
+                    toast.success('Identity key copied!')
+                  }}
                   color='secondary'
                 >
                   <ContentCopyIcon />
@@ -100,7 +131,7 @@ const Receive = ({ assetId, asset, badge }) => {
                 </Typography>
               </Grid>
               <Grid item sx={{ display: 'grid', justifyContent: 'right' }}>
-                <Button color='secondary' onClick={refresh}>
+                <Button disabled={loading} color='secondary' onClick={refresh}>
                   <RefreshIcon />
                 </Button>
               </Grid>
@@ -131,6 +162,7 @@ const Receive = ({ assetId, asset, badge }) => {
                                 <Button
                                   onClick={() => handleAccept(transaction)}
                                   variant='outlined' color='secondary'
+                                  disabled={loading}
                                 >
                                   Accept
                                 </Button>
@@ -139,6 +171,7 @@ const Receive = ({ assetId, asset, badge }) => {
                                 <Button
                                   onClick={() => handleRefund(transaction)}
                                   variant='outlined' color='secondary'
+                                  disabled={loading}
                                 >
                                   Refund
                                 </Button>

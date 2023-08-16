@@ -7,8 +7,7 @@ import {
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
 import { Link } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { toast } from 'react-toastify'
 import BTMS from '../../utils/BTMS'
 
 const Mint = ({ history }) => {
@@ -16,9 +15,8 @@ const Mint = ({ history }) => {
   const [name, setName] = useState('')
   const [quantity, setQuantity] = useState('')
   const [description, setDescription] = useState('')
-  const [tags, setTags] = useState([])
-  const [checked, setChecked] = useState(false)
   const [photoURL, setPhotoURL] = useState(null)
+  const [loading, setLoading] = useState(false)
   const fileInputRef = useRef()
 
   const handlePhotoClick = () => {
@@ -39,19 +37,23 @@ const Mint = ({ history }) => {
 
   const mint = async () => {
     try {
+      setLoading(true)
       if (name.trim() === '') {
         toast.error('Enter a name for the token!')
       } else if (quantity.trim() === '' || isNaN(quantity)) {
         toast.error('Enter a quantity for the max number of tokens!')
       } else if (description.trim() === '') {
         toast.error('Enter a description for the token!')
-      } else if (checked === true) {
-        await BTMS.issue(Number(quantity), name)
-        toast.success('Success!')
-        history.push(`/tokens/`)
+      } else {
+        await BTMS.issue(Number(quantity), name, description)
+        toast.success(`You minted ${quantity} ${name}!`)
+        history.push(`/`)
       }
     } catch (error) {
-      toast.error('Something went wrong!')
+      console.error(error)
+      toast.error(error.message || 'Something went wrong!')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -143,7 +145,7 @@ const Mint = ({ history }) => {
                 </Grid>
                 <Grid item>
                   <Typography variant='p'>
-                    This will limit the total number of supply for your token. When it reaches this number, no more tokens will be minted from the contract.
+                    This is your tonen's max supply.
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -167,20 +169,6 @@ const Mint = ({ history }) => {
                     multiline variant='standard' color='secondary' fullWidth
                     helperText={'Required'}
                     onChange={(e) => setDescription(e.target.value)}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item container direction='column' className={classes.form}>
-                <Grid item>
-                  <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
-                    Tags
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <TextField
-                    placeholder='e.g. art, music, literature, etc'
-                    multiline variant='standard' color='secondary' fullWidth
-                    onChange={(e) => setTags(e.target.value)}
                   />
                 </Grid>
               </Grid>
@@ -215,22 +203,8 @@ const Mint = ({ history }) => {
             </Grid>
           </Grid>
           <Grid container direction='column' className={classes.form}>
-            <Grid item>
-              <FormControlLabel
-                color='secondary'
-                required
-                control={<Checkbox
-                  color='secondary'
-                  onChange={e => setChecked(c => !c)}
-                />}
-                label='I am aware and agree that the token creation will broadcast on the BSV blockchain when I approve this transaction, and it won’t be reversible.'
-              />
-            </Grid>
             <Grid item align='right' className={classes.button}>
-              <Button variant='outlined' color='secondary' onClick={mint}>Create</Button>
-            </Grid>
-            <Grid item>
-              <ToastContainer />
+              <Button variant='outlined' color='secondary' onClick={mint} disabled={loading}>Create</Button>
             </Grid>
           </Grid>
         </Grid>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import useStyles from './home-style'
-import { ToastContainer } from 'react-toastify'
 import {
   Grid, Typography, Button, LinearProgress, TableContainer,
   Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia, Badge
@@ -10,12 +9,12 @@ import SendIcon from '@mui/icons-material/Send'
 import Send from '../../components/Send'
 import Receive from '../../components/Receive'
 import BTMS from '../../utils/BTMS'
+import { toast } from 'react-toastify'
 
 const Home = () => {
   const classes = useStyles()
-  // { tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: '0' }, { tokenName: 'test2', balance: '50', tokenIcon: '/favicon.svg', tokenId: '1' }, { tokenName: '123', balance: '100', tokenIcon: '/favicon.svg', tokenId: '134134' }, { tokenName: 'Test3', balance: '100', tokenIcon: '/favicon.svg', tokenId: '13423' }, { tokenName: 'Test4', balance: '100', tokenIcon: '/favicon.svg', tokenId: '4353' }, { tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: '0' }
   const [tokens, setTokens] = useState([])
-  const [tokensLoading, setTokensLoading] = useState(false)
+  const [tokensLoading, setTokensLoading] = useState(true)
   const [openSend, setOpenSend] = useState(false)
   const [openReceive, setOpenReceive] = useState(false)
   const [tokenKey, setTokenKey] = useState('')
@@ -33,9 +32,15 @@ const Home = () => {
 
   useEffect(() => {
     (async () => {
-      const assets = await BTMS.listAssets()
-      console.log(assets)
-      setTokens(assets)
+      try {
+        const assets = await BTMS.listAssets()
+        setTokens(assets)
+      } catch (error) {
+        console.error(error)
+        toast.error(error.message || 'Something went wrong!')
+      } finally {
+        setTokensLoading(false)
+      }
     })()
   }, [])
 
@@ -44,9 +49,6 @@ const Home = () => {
       <Container>
         <Grid container>
           <Grid item container direction='column' align='center'>
-            <Grid item>
-              <ToastContainer />
-            </Grid>
             <Grid item className={classes.title}>
               <Typography variant='h2' sx={{ fontWeight: 'bold' }}>
                 BTMS
@@ -109,12 +111,7 @@ const Home = () => {
                           </TableCell>
                           <TableCell align='right'>{token.balance}</TableCell>
                           <TableCell align='right'>
-                            <Button
-                              onClick={defineSendToken}
-                              variant='outlined' color='secondary'
-                            >
-                              Send <SendIcon className={classes.send_icon} />
-                            </Button>
+                            <Send assetId={token.assetId} asset={token} />
                           </TableCell>
                           <TableCell align='right'>
                             <Receive assetId={token.assetId} asset={token} badge={token.incoming} />
@@ -126,12 +123,6 @@ const Home = () => {
                 )}
             </Table>
           </TableContainer>
-          <Send
-            openSend={openSend}
-            setOpenSend={setOpenSend}
-            tokenKey={tokenKey}
-            setTokensLoading={setTokensLoading}
-          />
         </Grid>
         <Grid container align='center' direction='column' className={classes.no_tokens}>
           {tokensLoading

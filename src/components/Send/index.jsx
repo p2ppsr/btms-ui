@@ -2,49 +2,58 @@ import React, { useState } from 'react'
 import useStyles from './send-style'
 import { toast } from 'react-toastify'
 import {
-  Grid, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField,
+  Grid, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField
 } from '@mui/material'
 import BTMS from '../../utils/BTMS'
 
-const Send = ({ openSend, setOpenSend, tokenKey, setTokensLoading }) => {
+const Send = ({ assetId, asset }) => {
   const classes = useStyles()
   const [recipient, setRecipient] = useState('')
   const [quantity, setQuantity] = useState('')
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleSendCancel = () => {
     setQuantity('')
     setRecipient('')
-    setOpenSend(false)
+    setOpen(false)
   }
 
   const handleSend = async () => {
     try {
+      setLoading(true)
       if (recipient.trim() === '') {
         toast.error('Enter recipient identity key!')
       } else if (recipient.length < 66) {
         toast.error('The recipient identity key must be at least 66 character long!')
       } else if (quantity.trim() === '' || isNaN(quantity)) {
         toast.error('Enter a quantity of tokens to send!')
-      } else if (quantity > tokenKey.balance) {
+      } else if (quantity > asset.balance) {
         toast.error('Oops! That is too many tokens!')
       } else {
-        await BTMS.send(tokenKey.assetId, recipient, quantity)
-        toast.success('Success!')
-        setOpenSend(false)
-        setTokensLoading(true)
+        await BTMS.send(asset.assetId, recipient, quantity)
+        toast.success(`You sent ${quantity} ${asset.name}!`)
+        setOpen(false)
       }
     } catch (error) {
       console.error(error)
       toast.error(error.message || 'Something went wrong!')
-      setOpenSend(false)
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <Grid item container align='center' direction='column'>
-      <Dialog open={openSend} onClose={handleSendCancel} color='primary'>
+    <>
+      <Button
+                              onClick={() => setOpen(true)}
+                              variant='outlined' color='secondary'
+                            >
+                              Send
+                            </Button>
+      <Dialog open={open} onClose={handleSendCancel} color='primary'>
         <DialogTitle variant='h4' sx={{ fontWeight: 'bold' }}>
-          Send {tokenKey.name}
+          Send {asset.name}
         </DialogTitle>
         <DialogContent>
           <Typography variant='h6'>
@@ -70,11 +79,11 @@ const Send = ({ openSend, setOpenSend, tokenKey, setTokensLoading }) => {
           />
         </DialogContent>
         <DialogActions className={classes.button}>
-          <Button color='secondary' variant='outlined' onClick={handleSendCancel}>Cancel</Button>
-          <Button color='secondary' variant='outlined' onClick={handleSend}>Send Now</Button>
+          <Button disabled={loading} color='secondary' variant='outlined' onClick={handleSendCancel}>Cancel</Button>
+          <Button disabled={loading} color='secondary' variant='outlined' onClick={handleSend}>Send Now</Button>
         </DialogActions>
       </Dialog>
-    </Grid>
+    </>
   )
 }
 
