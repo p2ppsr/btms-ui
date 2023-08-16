@@ -14,5 +14,14 @@ module.exports = merge(common, {
     },
     static: './public'
   },
+  module: {
+    rules: [
+      {
+        test: /\.m?js$/,
+        enforce: 'pre',
+        use: ['source-map-loader'],
+      }
+    ],
+  },
   devtool: 'inline-source-map'
 })

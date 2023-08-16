@@ -14,6 +14,7 @@ ReactDOM.render(
     appImages={[
       '/start-page.svg'
     ]}
+    supportedMetaNet={location.host.startsWith('staging') || location.host.startsWith('localhost') ? 'testnet' : 'mainnet'}
   >
     <App />
   </BabbagePrompt>,

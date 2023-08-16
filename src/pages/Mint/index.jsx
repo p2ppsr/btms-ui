@@ -9,8 +9,9 @@ import AddAPhotoIcon from '@mui/icons-material/AddAPhoto'
 import { Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import BTMS from '../../utils/BTMS'
 
-const Mint = () => {
+const Mint = ({ history }) => {
   const classes = useStyles()
   const [name, setName] = useState('')
   const [quantity, setQuantity] = useState('')
@@ -45,8 +46,9 @@ const Mint = () => {
       } else if (description.trim() === '') {
         toast.error('Enter a description for the token!')
       } else if (checked === true) {
+        await BTMS.issue(Number(quantity), name)
         toast.success('Success!')
-        window.location.href = `/tokens/`
+        history.push(`/tokens/`)
       }
     } catch (error) {
       toast.error('Something went wrong!')

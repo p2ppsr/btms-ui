@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import useStyles from './home-style'
 import { ToastContainer } from 'react-toastify'
@@ -9,15 +9,17 @@ import {
 import SendIcon from '@mui/icons-material/Send'
 import Send from '../../components/Send'
 import Receive from '../../components/Receive'
+import BTMS from '../../utils/BTMS'
 
 const Home = () => {
   const classes = useStyles()
-  const [tokens, setTokens] = useState([{ tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: '0' }, { tokenName: 'test2', balance: '50', tokenIcon: '/favicon.svg', tokenId: '1' }, { tokenName: '123', balance: '100', tokenIcon: '/favicon.svg', tokenId: '134134' }, { tokenName: 'Test3', balance: '100', tokenIcon: '/favicon.svg', tokenId: '13423' }, { tokenName: 'Test4', balance: '100', tokenIcon: '/favicon.svg', tokenId: '4353' }, { tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: '0' }])
+  // { tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: '0' }, { tokenName: 'test2', balance: '50', tokenIcon: '/favicon.svg', tokenId: '1' }, { tokenName: '123', balance: '100', tokenIcon: '/favicon.svg', tokenId: '134134' }, { tokenName: 'Test3', balance: '100', tokenIcon: '/favicon.svg', tokenId: '13423' }, { tokenName: 'Test4', balance: '100', tokenIcon: '/favicon.svg', tokenId: '4353' }, { tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: '0' }
+  const [tokens, setTokens] = useState([])
   const [tokensLoading, setTokensLoading] = useState(false)
   const [openSend, setOpenSend] = useState(false)
   const [openReceive, setOpenReceive] = useState(false)
   const [tokenKey, setTokenKey] = useState('')
-  const [incomingTransactions, setIncomingTransactions] = useState([{ transactionName: 'Test', transactionQuantity: '10', counterparty: '654321', txid: '678' }, { transactionName: '123', transactionQuantity: '80', counterparty: '123', txid: '2' }, { transactionName: 'Test', transactionQuantity: '3', counterparty: '654321', txid: '5' }])
+  const [incomingTransactions, setIncomingTransactions] = useState([])
 
   const handleSendOpen = (event) => {
     event.stopPropagation()
@@ -28,6 +30,14 @@ const Home = () => {
     event.stopPropagation()
     setOpenReceive(true)
   }
+
+  useEffect(() => {
+    (async () => {
+      const assets = await BTMS.listAssets()
+      console.log(assets)
+      setTokens(assets)
+    })()
+  }, [])
 
   return (
     <div>
@@ -97,7 +107,7 @@ const Home = () => {
                             <img src={token.tokenIcon} style={{ height: '2em' }} />
                           </TableCell>
                           <TableCell align='left'>
-                            {token.tokenName}
+                            {token.name}
                           </TableCell>
                           <TableCell align='right'>{token.balance}</TableCell>
                           <TableCell align='right'>

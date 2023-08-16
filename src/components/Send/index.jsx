@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import {
   Grid, Typography, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField,
 } from '@mui/material'
+import BTMS from '../../utils/BTMS'
 
 const Send = ({ openSend, setOpenSend, tokenKey, setTokensLoading }) => {
   const classes = useStyles()
@@ -16,7 +17,7 @@ const Send = ({ openSend, setOpenSend, tokenKey, setTokensLoading }) => {
     setOpenSend(false)
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     try {
       if (recipient.trim() === '') {
         toast.error('Enter recipient identity key!')
@@ -27,12 +28,14 @@ const Send = ({ openSend, setOpenSend, tokenKey, setTokensLoading }) => {
       } else if (quantity > tokenKey.balance) {
         toast.error('Oops! That is too many tokens!')
       } else {
+        await BTMS.send(tokenKey.assetId, recipient, quantity)
         toast.success('Success!')
         setOpenSend(false)
         setTokensLoading(true)
       }
     } catch (error) {
-      toast.error('Something went wrong!')
+      console.error(error)
+      toast.error(error.message || 'Something went wrong!')
       setOpenSend(false)
     }
   }
@@ -41,7 +44,7 @@ const Send = ({ openSend, setOpenSend, tokenKey, setTokensLoading }) => {
     <Grid item container align='center' direction='column'>
       <Dialog open={openSend} onClose={handleSendCancel} color='primary'>
         <DialogTitle variant='h4' sx={{ fontWeight: 'bold' }}>
-          Send {tokenKey.tokenName}
+          Send {tokenKey.name}
         </DialogTitle>
         <DialogContent>
           <Typography variant='h6'>
