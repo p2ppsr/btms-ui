@@ -11,7 +11,7 @@ import RefreshIcon from '@mui/icons-material/Refresh'
 import BTMS from '../../utils/BTMS'
 import { toast } from 'react-toastify'
 
-const Receive = ({ assetId, asset, badge }) => {
+const Receive = ({ assetId, asset, badge, onReloadNeeded = () => {} }) => {
   const classes = useStyles()
   const [userIdentityKey, setUserIdentityKey] = useState('')
   const [incomingTransactions, setIncomingTransactions] = useState([])
@@ -51,6 +51,10 @@ const Receive = ({ assetId, asset, badge }) => {
     try {
       setLoading(true)
       await BTMS.acceptIncomingPayment(assetId, payment)
+      try {
+        refresh()
+        onReloadNeeded()
+        } catch (e) {}
       toast.success(`${payment.amount} ${asset.name} successfully received!`)
       setOpen(false)
     } catch (error) {
@@ -65,6 +69,10 @@ const Receive = ({ assetId, asset, badge }) => {
     try {
       setLoading(true)
       await BTMS.refundIncomingTransaction(assetId, payment)
+      try {
+        refresh()
+          onReloadNeeded()
+        } catch (e) {}
       toast.success(`You refunded ${payment.amount} ${asset.name}.`)
       setOpen(false)
     } catch (error) {

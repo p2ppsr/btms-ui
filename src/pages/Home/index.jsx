@@ -30,6 +30,11 @@ const Home = () => {
     setOpenReceive(true)
   }
 
+  const refresh = async () => {
+    const assets = await BTMS.listAssets()
+    setTokens(assets)
+  }
+
   useEffect(() => {
     (async () => {
       try {
@@ -42,6 +47,14 @@ const Home = () => {
         setTokensLoading(false)
       }
     })()
+    const interval = setInterval(() => {
+      refresh()
+    }, 5000)
+    return () => {
+      if (interval) {
+        clearInterval(interval)
+      }
+    }
   }, [])
 
   return (
@@ -111,10 +124,10 @@ const Home = () => {
                           </TableCell>
                           <TableCell align='right'>{token.balance}</TableCell>
                           <TableCell align='right'>
-                            <Send assetId={token.assetId} asset={token} />
+                            <Send assetId={token.assetId} asset={token} onReloadNeeded={refresh} />
                           </TableCell>
                           <TableCell align='right'>
-                            <Receive assetId={token.assetId} asset={token} badge={token.incoming} />
+                            <Receive assetId={token.assetId} asset={token} badge={token.incoming} onReloadNeeded={refresh} />
                           </TableCell>
                         </TableRow>
                       )

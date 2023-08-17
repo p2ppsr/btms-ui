@@ -6,7 +6,7 @@ import {
 } from '@mui/material'
 import BTMS from '../../utils/BTMS'
 
-const Send = ({ assetId, asset }) => {
+const Send = ({ assetId, asset, onReloadNeeded = () => {} }) => {
   const classes = useStyles()
   const [recipient, setRecipient] = useState('')
   const [quantity, setQuantity] = useState('')
@@ -32,6 +32,9 @@ const Send = ({ assetId, asset }) => {
         toast.error('Oops! That is too many tokens!')
       } else {
         await BTMS.send(asset.assetId, recipient, quantity)
+        try {
+          onReloadNeeded()
+        } catch (e) {}
         toast.success(`You sent ${quantity} ${asset.name}!`)
         setOpen(false)
       }
