@@ -3,9 +3,10 @@ on:
   push:
     branches:
       - master
+      - production
 
 env:
-  CURRENT_BRANCH: ${{ github.ref_name }}
+  CURRENT_BRANCH: ${{ github.ref_name =='production' && 'production' || 'master' }}
   GCR_HOST: us.gcr.io
   GOOGLE_PROJECT_ID: babbage-private
   GCR_IMAGE_NAME: btms-mvp-ui
