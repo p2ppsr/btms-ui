@@ -10,6 +10,7 @@ import Send from '../../components/Send'
 import Receive from '../../components/Receive'
 import BTMS from '../../utils/BTMS'
 import { toast } from 'react-toastify'
+import { requestGroupPermission } from '@babbage/sdk'
 
 const Home = () => {
   const classes = useStyles()
@@ -37,6 +38,7 @@ const Home = () => {
 
   useEffect(() => {
     (async () => {
+      await requestGroupPermission()
       try {
         const assets = await BTMS.listAssets()
         setTokens(assets)
@@ -46,10 +48,11 @@ const Home = () => {
       } finally {
         setTokensLoading(false)
       }
+      interval = setInterval(() => {
+        refresh()
+      }, 5000)
     })()
-    const interval = setInterval(() => {
-      refresh()
-    }, 5000)
+    let interval
     return () => {
       if (interval) {
         clearInterval(interval)
@@ -150,7 +153,7 @@ const Home = () => {
                       </Card>
                     </Grid>
                     <Grid item align='center'>
-                      <Typography variant='h8'>Y' got no tokens yet, m8!</Typography>
+                      <Typography variant='h8'>No tokens yet.</Typography>
                     </Grid>
                     <Grid item align='center' sx={{ paddingTop: '0.5em' }}>
                       <Button component={Link} to='/mint' variant='outlined' color='secondary'>
