@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import useStyles from './home-style'
 import {
   Grid, Typography, Button, LinearProgress, TableContainer,
-  Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia, Badge
+  Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia, Box
 } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
 import Send from '../../components/Send'
@@ -38,7 +38,10 @@ const Home = () => {
 
   useEffect(() => {
     (async () => {
-      await requestGroupPermission()
+      if (!window.localStorage.hasRequestedGroupPermission) {
+        await requestGroupPermission()
+        window.localStorage.hasRequestedGroupPermission = true
+      }
       try {
         const assets = await BTMS.listAssets()
         setTokens(assets)
@@ -136,13 +139,16 @@ const Home = () => {
                       )
                     })}
                   </TableBody>
-                )}
+                  )}
             </Table>
           </TableContainer>
         </Grid>
         <Grid container align='center' direction='column' className={classes.no_tokens}>
           {tokensLoading
-            ? <LinearProgress color='secondary' />
+            ? <Box>
+              <Typography variant='body' sx={{ paddingBottom: '2em' }}>Loading tokens...</Typography>
+              <LinearProgress color='secondary' />
+            </Box>
             : (
               <Grid item container align='center' justifyContent='center'>
                 {tokens.length === 0 && (
@@ -163,7 +169,7 @@ const Home = () => {
                   </Grid>
                 )}
               </Grid>
-            )}
+              )}
         </Grid>
       </Container>
     </div>
