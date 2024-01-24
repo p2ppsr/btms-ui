@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import useStyles from './home-style'
 import {
   Grid, Typography, Button, LinearProgress, TableContainer,
-  Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia
+  Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia, Box
 } from '@mui/material'
 import Send from '../../components/Send'
 import Receive from '../../components/Receive'
@@ -23,7 +23,10 @@ const Home = ({ history }) => {
 
   useEffect(() => {
     (async () => {
-      await requestGroupPermission()
+      if (!window.localStorage.hasRequestedGroupPermission) {
+        await requestGroupPermission()
+        window.localStorage.hasRequestedGroupPermission = true
+      }
       try {
         const assets = await BTMS.listAssets()
         setTokens(assets)
@@ -135,7 +138,10 @@ const Home = ({ history }) => {
         </Grid>
         <Grid container align='center' direction='column' className={classes.no_tokens}>
           {tokensLoading
-            ? <><br /><br /><LinearProgress color='secondary' /></>
+            ? <Box>
+              <Typography variant='body' sx={{ paddingBottom: '2em' }}>Loading tokens...</Typography>
+              <LinearProgress color='secondary' />
+            </Box>
             : (
               <Grid item container align='center' justifyContent='center'>
                 {tokens.length === 0 && (
