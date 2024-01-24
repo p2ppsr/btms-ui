@@ -1,7 +1,7 @@
 import React from 'react'
 import Home from './pages/Home'
 import Mint from './pages/Mint'
-// import Tokens from './pages/Tokens'
+import Tokens from './pages/Tokens'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { CssBaseline } from '@mui/material'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
@@ -31,12 +31,12 @@ const App = () => {
       <ToastContainer />
       <CssBaseline>
         <Router>
-            <Switch>
-              <Route exact path='/' component={Home} />
-              <Route exact path='/mint' component={Mint} />
-              {/* <Route path='/tokens/:tokenID' component={Tokens} /> */}
-              <Route default component={Home} />
-            </Switch>
+          <Switch>
+            <Route exact path='/' component={Home} />
+            <Route exact path='/mint' component={Mint} />
+            <Route path='/tokens/:tokenID' component={Tokens} />
+            <Route default component={Home} />
+          </Switch>
         </Router>
       </CssBaseline>
     </ThemeProvider>

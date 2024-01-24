@@ -3,33 +3,18 @@ import { Link } from 'react-router-dom'
 import useStyles from './home-style'
 import {
   Grid, Typography, Button, LinearProgress, TableContainer,
-  Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia, Badge
+  Table, TableHead, TableBody, TableRow, TableCell, Container, Card, CardMedia
 } from '@mui/material'
-import SendIcon from '@mui/icons-material/Send'
 import Send from '../../components/Send'
 import Receive from '../../components/Receive'
 import BTMS from '../../utils/BTMS'
 import { toast } from 'react-toastify'
 import { requestGroupPermission } from '@babbage/sdk'
 
-const Home = () => {
+const Home = ({ history }) => {
   const classes = useStyles()
   const [tokens, setTokens] = useState([])
   const [tokensLoading, setTokensLoading] = useState(true)
-  const [openSend, setOpenSend] = useState(false)
-  const [openReceive, setOpenReceive] = useState(false)
-  const [tokenKey, setTokenKey] = useState('')
-  const [incomingTransactions, setIncomingTransactions] = useState([])
-
-  const handleSendOpen = (event) => {
-    event.stopPropagation()
-    setOpenSend(true)
-  }
-
-  const handleReceiveOpen = (event) => {
-    event.stopPropagation()
-    setOpenReceive(true)
-  }
 
   const refresh = async () => {
     const assets = await BTMS.listAssets()
@@ -107,22 +92,30 @@ const Home = () => {
                 : (
                   <TableBody>
                     {tokens.map((token, i) => {
-                      const defineSendToken = (event) => {
-                        setTokenKey(token)
-                        handleSendOpen(event)
-                      }
-                      const defineReceiveToken = (event) => {
-                        setTokenKey(token)
-                        handleReceiveOpen(event)
-                      }
                       return (
                         <TableRow
-                          key={i} className={classes.link}
+                          key={i}
+                          className={classes.link}
                         >
-                          <TableCell align='left' style={{ width: '0.1em' }}>
-                            <img src={token.tokenIcon} style={{ height: '2em' }} />
+                          <TableCell
+                            align='left'
+                            style={{
+                              width: '0.1em',
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => {
+                              history.push(`/tokens/${token.assetId}`)
+                            }}
+                          >
+                            <img src={token.tokenIcon || '/favicon.svg'} style={{ height: '2em' }} />
                           </TableCell>
-                          <TableCell align='left'>
+                          <TableCell
+                            align='left'
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              history.push(`/tokens/${token.assetId}`)
+                            }}
+                          >
                             {token.name}
                           </TableCell>
                           <TableCell align='right'>{token.balance}</TableCell>
@@ -142,7 +135,7 @@ const Home = () => {
         </Grid>
         <Grid container align='center' direction='column' className={classes.no_tokens}>
           {tokensLoading
-            ? <LinearProgress color='secondary' />
+            ? <><br /><br /><LinearProgress color='secondary' /></>
             : (
               <Grid item container align='center' justifyContent='center'>
                 {tokens.length === 0 && (
