@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import useStyles from './tokens-style'
 import { Link } from 'react-router-dom'
 import {
-  Grid, Typography, Button, TableContainer,
+  Grid, Typography, Button, TableContainer, Box, LinearProgress,
   Table, TableHead, TableBody, TableRow, TableCell, Container
 } from '@mui/material'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
@@ -12,8 +12,11 @@ import BTMS from '../../utils/BTMS'
 
 const Tokens = ({ match }) => {
   const classes = useStyles()
-  const tokenID = match.params.tokenID
-  const [token, setToken] = useState({ name: 'Test', balance: '100', tokenIcon: '/favicon.svg', tokenId: tokenID })
+  let tokenID = match.params.tokenID
+  if (tokenID) {
+    tokenID = tokenID.replace('_', '.')
+  }
+  const [token, setToken] = useState({})
   const [transactions, setTransactions] = useState([
     { tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', counterparty: '654321', tokenId: '0', transactionDate: '6/12/22', transactionID: '0349810948' },
     { tokenName: 'test2', balance: '50', tokenIcon: '/favicon.svg', counterparty: '123', tokenId: '1', transactionDate: '3/2/22', transactionID: '0349810948' },
@@ -23,13 +26,72 @@ const Tokens = ({ match }) => {
     { tokenName: 'Test', balance: '80', tokenIcon: '/favicon.svg', counterparty: '23', tokenId: '0', transactionDate: '10/9/23', transactionID: '0349810948' }
   ])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const refresh = async () => {
+    const assets = await BTMS.listAssets()
+    const found = assets.find(x => x.assetId = tokenID)
+    if (!found) {
+      setError(true)
+      setLoading(false)
+      toast.error('Asset not found!')
+      return
+    }
+    setToken(found)
+    const transactions = await BTMS.getTransactions(tokenID)
+    setTransactions(transactions.transactions)
+  }
 
   useEffect(() => {
     (async () => {
-
+      await refresh()
       setLoading(false)
     })()
-  })
+  }, [tokenID])
+
+  if (error) {
+    return (
+      <div>
+        <Container>
+          <Grid container>
+            <Grid item className={classes.back_button}>
+              <Button component={Link} to='/' color='secondary'>
+                <ArrowBackIosNewIcon className={classes.back_icon} /> My Tokens
+              </Button>
+            </Grid>
+          </Grid>
+          <Box>
+            <br />
+            <br />
+            <Typography align='center'>
+              Asset not found.
+            </Typography>
+          </Box>
+        </Container>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div>
+        <Container>
+          <Grid container>
+            <Grid item className={classes.back_button}>
+              <Button component={Link} to='/' color='secondary'>
+                <ArrowBackIosNewIcon className={classes.back_icon} /> My Tokens
+              </Button>
+            </Grid>
+          </Grid>
+          <Box>
+            <br />
+            <br />
+            <LinearProgress color='secondary' />
+          </Box>
+        </Container>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -61,10 +123,10 @@ const Tokens = ({ match }) => {
             </Grid>
             <Grid item container justifyContent='center' direction='row'>
               <Grid item align='left' style={{ paddingRight: '2em' }}>
-                <Receive asset={token} assetId={tokenID} />
+                <Receive asset={token} assetId={tokenID} badge={token.incoming} onReloadNeeded={refresh} />
               </Grid>
               <Grid item align='right'>
-                <Send asset={token} assetId={tokenID} />
+                <Send asset={token} assetId={tokenID} onReloadNeeded={refresh} />
               </Grid>
             </Grid>
           </Grid>

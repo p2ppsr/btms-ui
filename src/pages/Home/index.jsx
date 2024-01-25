@@ -107,7 +107,7 @@ const Home = ({ history }) => {
                               cursor: 'pointer'
                             }}
                             onClick={() => {
-                              history.push(`/tokens/${token.assetId}`)
+                              history.push(`/tokens/${token.assetId.replace('.', '_')}`)
                             }}
                           >
                             <img src={token.tokenIcon || '/favicon.svg'} style={{ height: '2em' }} />
@@ -116,7 +116,7 @@ const Home = ({ history }) => {
                             align='left'
                             style={{ cursor: 'pointer' }}
                             onClick={() => {
-                              history.push(`/tokens/${token.assetId}`)
+                              history.push(`/tokens/${token.assetId.replace('.', '_')}`)
                             }}
                           >
                             {token.name}
@@ -139,7 +139,11 @@ const Home = ({ history }) => {
         <Grid container align='center' direction='column' className={classes.no_tokens}>
           {tokensLoading
             ? <Box>
+              <br />
+              <br />
               <Typography variant='body' sx={{ paddingBottom: '2em' }}>Loading tokens...</Typography>
+              <br />
+              <br />
               <LinearProgress color='secondary' />
             </Box>
             : (
