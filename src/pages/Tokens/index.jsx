@@ -17,14 +17,7 @@ const Tokens = ({ match }) => {
     tokenID = tokenID.replace('_', '.')
   }
   const [token, setToken] = useState({})
-  const [transactions, setTransactions] = useState([
-    { tokenName: 'Test', balance: '100', tokenIcon: '/favicon.svg', counterparty: '654321', tokenId: '0', transactionDate: '6/12/22', transactionID: '0349810948' },
-    { tokenName: 'test2', balance: '50', tokenIcon: '/favicon.svg', counterparty: '123', tokenId: '1', transactionDate: '3/2/22', transactionID: '0349810948' },
-    { tokenName: '123', balance: '100', tokenIcon: '/favicon.svg', counterparty: '654321', tokenId: '134134', transactionDate: '7/2/22', transactionID: '0349810948' },
-    { tokenName: 'Test3', balance: '100', tokenIcon: '/favicon.svg', counterparty: '432', tokenId: '3', transactionDate: '7/2/22', transactionID: '0349810948' },
-    { tokenName: 'Test4', balance: '100', tokenIcon: '/favicon.svg', counterparty: '123', tokenId: '6', transactionDate: '3/2/23', transactionID: '0349810948' },
-    { tokenName: 'Test', balance: '80', tokenIcon: '/favicon.svg', counterparty: '23', tokenId: '0', transactionDate: '10/9/23', transactionID: '0349810948' }
-  ])
+  const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
@@ -159,13 +152,13 @@ const Tokens = ({ match }) => {
                           key={i}
                         >
                           <TableCell align='left' style={{ width: '0.1em' }}>
-                            {tx.transactionDate}
+                            {tx.date}
                           </TableCell>
                           <TableCell align='left'>
-                            {tx.balance}
+                            {tx.amount}
                           </TableCell>
                           <TableCell align='right'>{tx.counterparty}</TableCell>
-                          <TableCell align='right'>{tx.transactionID}</TableCell>
+                          <TableCell align='right'>{tx.txid}</TableCell>
                         </TableRow>
                       )
                     })}
