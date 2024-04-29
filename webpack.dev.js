@@ -5,7 +5,7 @@ module.exports = merge(common, {
   mode: 'development',
   devServer: {
     open: true,
-    port: 8088, // you can change the port
+    port: 8093, // you can change the port
     client: {
       overlay: true // Show application errors
     },
@@ -13,15 +13,6 @@ module.exports = merge(common, {
       index: 'index.html'
     },
     static: './public'
-  },
-  module: {
-    rules: [
-      {
-        test: /\.m?js$/,
-        enforce: 'pre',
-        use: ['source-map-loader'],
-      }
-    ],
   },
   devtool: 'inline-source-map'
 })
