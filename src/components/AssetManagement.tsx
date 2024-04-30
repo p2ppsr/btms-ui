@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Asset } from '../../../btms-core/out/src'; // Import Asset from the appropriate path
+import { Asset } from 'btms-core'; // Import Asset from the appropriate path
 
 interface AssetManagementProps {
   assets: Asset[]; // List of assets passed as props

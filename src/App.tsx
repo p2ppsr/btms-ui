@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Grid, Tabs, Tab } from '@mui/material';
-import { BTMS, Asset } from '../../btms-core/out/src';
+import { BTMS, Asset } from 'btms-core';
 import ExchangePage from './components/ExchangePageOrg';
 
 let btms = new BTMS(

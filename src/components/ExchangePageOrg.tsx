@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react'
 import { TextField, Grid, LinearProgress, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { ToastContainer } from 'react-toastify'
-import { BTMS, Asset } from '../../../btms-core/out/src' // Adjust the path as needed
+import { BTMS, Asset } from 'btms-core' // Adjust the path as needed
 //import { IdentityCard } from 'metanet-identity-react'
 import web3Theme from '../theme'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
@@ -10,14 +10,15 @@ import SearchIcon from '@mui/icons-material/Search'
 import AssetsTable from './AssetsTable'
 import MarketplaceButton from './MarketplaceButton'
 import { OFFERED_TEXT, ACCEPTED_TEXT } from '../utils/constants'
-import { 
+import {
   getAsset,
   updateAssetWithRemainderBalance,
   updateAssetWithAmountBalance,
   removeAssetWithAmount,
   updateStringRecord,
   updateNumberRecord,
-  updateAssetWithOriginalBalance } from '../utils/general'
+  updateAssetWithOriginalBalance
+} from '../utils/general'
 import SearchBar from './SearchBar'
 import InputAmount from './InputAmount'
 //import InputAmountOffer from './InputAmountOffer'
@@ -48,8 +49,8 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
   const [balanceTextToNameMapOffered, setBalanceTextToNameMapOffered] = useState<{ [key: string]: string }>({});
   const [balanceTextToWithAmountNameMapOffered, setBalanceTextToWithAmountNameMapOffered] = useState<{ [key: string]: string }>({});
   const [resetInputAmountOffer, setResetInputAmountOffer] = useState<boolean>(false);
-  const [assetTableOffered, setAssetTableOffered] =  useState<boolean>(true);
-  const [assetListUpdatedOffered, setAssetListUpdatedOffered] =  useState<boolean>(false);
+  const [assetTableOffered, setAssetTableOffered] = useState<boolean>(true);
+  const [assetListUpdatedOffered, setAssetListUpdatedOffered] = useState<boolean>(false);
   //const [assetRemainderOffer, setAssetRemainderOffer] = useState<number>(0)
   const [doAssetBalanceOffered, setDoAssetBalanceOffered] = useState<boolean>(false)
   const [isOffer, setIsOffer] = useState<boolean>(true)
@@ -69,8 +70,8 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
   const [balanceTextToNameMapAccepted, setBalanceTextToNameMapAccepted] = useState<{ [key: string]: string }>({});
   const [resetInputAmountAccept, setResetInputAmountAccept] = useState<boolean>(false);
   const [balanceTextToWithAmountNameMapAccepted, setBalanceTextToWithAmountNameMapAccepted] = useState<{ [key: string]: string }>({});
-  const [assetTableAccepted, setAssetTableAccepted] =  useState<boolean>(true);
-  const [assetListUpdatedAccepted, setAssetListUpdatedAccepted] =  useState<boolean>(false);
+  const [assetTableAccepted, setAssetTableAccepted] = useState<boolean>(true);
+  const [assetListUpdatedAccepted, setAssetListUpdatedAccepted] = useState<boolean>(false);
   //const [assetRemainderAccepted, setAssetRemainderAccepted] = useState<number>(0)
   const [doAssetBalanceAccepted, setDoAssetBalanceAccepted] = useState<boolean>(false)
   const [isAccept, setIsAccept] = useState<boolean>(false)
@@ -96,7 +97,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
         }
       });
       setBalanceTextToNameMapOffered(updatedBalanceTextToNameMapOffered);
-  
+
       // Update balanceTextToWithAmountNameMap for each asset
       const updatedBalanceTextToWithAmountNameMapOffered = { ...balanceTextToWithAmountNameMapOffered };
       fetchedAssetsOffer.forEach((asset) => {
@@ -126,7 +127,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
         }
       });
       setBalanceTextToNameMapAccepted(updatedBalanceTextToNameMapAccepted);
-  
+
       // Update balanceTextToWithAmountNameMap for each asset
       const updatedBalanceTextToWithAmountNameMapAccepted = { ...balanceTextToWithAmountNameMapAccepted };
       fetchedAssetsAccepted.forEach((asset) => {
@@ -145,7 +146,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
   };
 
   useEffect(() => {
-    dbg=true
+    dbg = true
     dbg && console.log('useEffect(): btms')
     setAssetTableOffered(true)
     fetchAssetsOffered();
@@ -153,18 +154,18 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
     setAssetTableAccepted(true)
     fetchAssetsAccepted();
     setAssetListUpdatedAccepted(true)
-    dbg=false
+    dbg = false
     return () => {
     };
   }, [btms]);
 
   // Trigger balance calculation - needed?
   useEffect(() => {
-    dbg=true
+    dbg = true
     dbg && console.log('useEffect(): []')
     setAssetListUpdatedOffered(true)
     setAssetListUpdatedAccepted(true)
-    dbg=false
+    dbg = false
   }, []);
 
   useEffect(() => {
@@ -177,7 +178,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
       updateNumberRecord(asset.assetId, asset.balance, setAvailableAccepted)
     })
     console.log('availableOffered=', availableOffered)
-    
+
     // Needed?
     // Call functions or perform actions based on doAssetBalance changes
     if (doAssetBalanceOffered || doAssetBalanceAccepted) {
@@ -187,7 +188,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
     dbg && console.log('isOffer=', isOffer, ',isAccept=', isAccept)
     isOffer === isAccept && console.error('Can only have isOffer true or isAccept true')
   }, [doAssetBalanceOffered, doAssetBalanceAccepted]); // Dependency array triggers effect when doAssetBalance changes
-    
+
   const handleAmountClearClickOffer = () => {
     dbg && console.log('handleAmountClearClickOffer()')
     setAddAssetDisabledOffer(true)
@@ -198,34 +199,34 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
     setAddAssetDisabledAccept(true)
   }
 
-	const handleSearchBarOffered = async (text: string) => {
-		// If text is blank then populate table with full asset listing and let use filter
-		try {
+  const handleSearchBarOffered = async (text: string) => {
+    // If text is blank then populate table with full asset listing and let use filter
+    try {
       console.log('handleSearchBarOffered()')
-			setShowProgressOffer(true)
-			let fetchedAssetsOffered = await btms.listAssets();
-			setShowProgressOffer(false)
+      setShowProgressOffer(true)
+      let fetchedAssetsOffered = await btms.listAssets();
+      setShowProgressOffer(false)
 
-			if (text !== '*') {
-				fetchedAssetsOffered = fetchedAssetsOffered.filter((asset) =>
-					asset.name?.toLowerCase().includes(text.toLowerCase())
-				);
-			}
-			const updatedBalanceTextToNameMapOffered = { ...balanceTextToNameMapOffered };
-			fetchedAssetsOffered.forEach((asset) => {
-				if (!updatedBalanceTextToNameMapOffered[asset.assetId]) {
-					updatedBalanceTextToNameMapOffered[asset.assetId] = AVAILABLE_TEXT;
-				}
-			});
-			setBalanceTextToNameMapOffered(updatedBalanceTextToNameMapOffered);
+      if (text !== '*') {
+        fetchedAssetsOffered = fetchedAssetsOffered.filter((asset) =>
+          asset.name?.toLowerCase().includes(text.toLowerCase())
+        );
+      }
+      const updatedBalanceTextToNameMapOffered = { ...balanceTextToNameMapOffered };
+      fetchedAssetsOffered.forEach((asset) => {
+        if (!updatedBalanceTextToNameMapOffered[asset.assetId]) {
+          updatedBalanceTextToNameMapOffered[asset.assetId] = AVAILABLE_TEXT;
+        }
+      });
+      setBalanceTextToNameMapOffered(updatedBalanceTextToNameMapOffered);
 
-			const updatedBalanceTextToWithAmountNameMapOffered = { ...balanceTextToWithAmountNameMapOffered };
-			fetchedAssetsOffered.forEach((asset) => {
-				if (!updatedBalanceTextToWithAmountNameMapOffered[asset.assetId]) {
-					updatedBalanceTextToWithAmountNameMapOffered[asset.assetId] = OFFERED_TEXT;
-				}
-			});
-			setBalanceTextToWithAmountNameMapOffered(updatedBalanceTextToWithAmountNameMapOffered);
+      const updatedBalanceTextToWithAmountNameMapOffered = { ...balanceTextToWithAmountNameMapOffered };
+      fetchedAssetsOffered.forEach((asset) => {
+        if (!updatedBalanceTextToWithAmountNameMapOffered[asset.assetId]) {
+          updatedBalanceTextToWithAmountNameMapOffered[asset.assetId] = OFFERED_TEXT;
+        }
+      });
+      setBalanceTextToWithAmountNameMapOffered(updatedBalanceTextToWithAmountNameMapOffered);
       setAssetsOffered(fetchedAssetsOffered);
       assetsOffered.forEach((asset) => {
         updateNumberRecord(asset.assetId, asset.balance, setAvailableOffered)
@@ -239,43 +240,43 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
       })
       */
       //setLoading(true);
-		} catch (error) {
-			console.error('Error fetching offer assets:', error);
-		} finally {
-			//setLoading(false);
-		}
-	};
+    } catch (error) {
+      console.error('Error fetching offer assets:', error);
+    } finally {
+      //setLoading(false);
+    }
+  };
 
   const handleSearchBarAccepted = async (text: string) => {
-		// If text is blank then populate table with full asset listing and let use filter
-		dbg && console.log('handleSearchBar():isAccept=', isAccept)
-		try {
-			setAccept()
-			setShowProgressAccept(true)
-			let fetchedAssetsAccepted = await btms.listAssets();
-			setShowProgressAccept(false)
-			if (text !== '*') {
-				fetchedAssetsAccepted = fetchedAssetsAccepted.filter((asset) =>
-					asset.name?.toLowerCase().includes(text.toLowerCase())
-				);
-			}
-			const updatedBalanceTextToNameMapAccepted = { ...balanceTextToNameMapAccepted };
-				fetchedAssetsAccepted.forEach((asset) => {
-				if (!updatedBalanceTextToNameMapAccepted[asset.assetId]) {
-					updatedBalanceTextToNameMapAccepted[asset.assetId] = AVAILABLE_TEXT;
-				}
-			});
-			setBalanceTextToNameMapAccepted(updatedBalanceTextToNameMapAccepted);
-	
-			// Update balanceTextToWithAmountNameMap for each asset
-			const updatedBalanceTextToWithAmountNameMapAccepted = { ...balanceTextToWithAmountNameMapAccepted };
-			fetchedAssetsAccepted.forEach((asset) => {
-				if (!updatedBalanceTextToWithAmountNameMapAccepted[asset.assetId]) {
-					updatedBalanceTextToWithAmountNameMapAccepted[asset.assetId] = ACCEPTED_TEXT;
-				}
-			});
-			setBalanceTextToWithAmountNameMapAccepted(updatedBalanceTextToWithAmountNameMapAccepted);
-			setAssetsAccepted(fetchedAssetsAccepted);
+    // If text is blank then populate table with full asset listing and let use filter
+    dbg && console.log('handleSearchBar():isAccept=', isAccept)
+    try {
+      setAccept()
+      setShowProgressAccept(true)
+      let fetchedAssetsAccepted = await btms.listAssets();
+      setShowProgressAccept(false)
+      if (text !== '*') {
+        fetchedAssetsAccepted = fetchedAssetsAccepted.filter((asset) =>
+          asset.name?.toLowerCase().includes(text.toLowerCase())
+        );
+      }
+      const updatedBalanceTextToNameMapAccepted = { ...balanceTextToNameMapAccepted };
+      fetchedAssetsAccepted.forEach((asset) => {
+        if (!updatedBalanceTextToNameMapAccepted[asset.assetId]) {
+          updatedBalanceTextToNameMapAccepted[asset.assetId] = AVAILABLE_TEXT;
+        }
+      });
+      setBalanceTextToNameMapAccepted(updatedBalanceTextToNameMapAccepted);
+
+      // Update balanceTextToWithAmountNameMap for each asset
+      const updatedBalanceTextToWithAmountNameMapAccepted = { ...balanceTextToWithAmountNameMapAccepted };
+      fetchedAssetsAccepted.forEach((asset) => {
+        if (!updatedBalanceTextToWithAmountNameMapAccepted[asset.assetId]) {
+          updatedBalanceTextToWithAmountNameMapAccepted[asset.assetId] = ACCEPTED_TEXT;
+        }
+      });
+      setBalanceTextToWithAmountNameMapAccepted(updatedBalanceTextToWithAmountNameMapAccepted);
+      setAssetsAccepted(fetchedAssetsAccepted);
       /*
       assetsAccepted.forEach((asset) => {
         updateNumberRecord(asset.assetId, asset.balance, setAvailableAccepted)
@@ -286,18 +287,18 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
         updateAssetWithRemainderBalance(true, assetsAccepted, assetId, Number(remainderAccepted[assetId]), setAssetsAccepted)
       })
       */
-		} catch (error) {
-			console.error('Error fetching accept assets:', error);
-		} finally {
-			//setLoading(false);
-		}
-	};
-	
+    } catch (error) {
+      console.error('Error fetching accept assets:', error);
+    } finally {
+      //setLoading(false);
+    }
+  };
+
   // Needed?
   const handleClearSearchBarOffer = () => {
     dbg && console.log('ExchangePage:handleClearSearchBarOffer()')
     setAssetsOffered([])
-  } 
+  }
 
   const handleClearSearchBarAccept = () => {
     dbg && console.log('ExchangePage:handleClearSearchBarAccept()')
@@ -362,7 +363,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
     setAssetTableFocusedAccept(true)
     setAssetTableFocusedOffer(false)
   }
-  
+
   const handleInputAmountFocusedOffered = (focused: boolean, isOffer: boolean, isAccept: boolean) => {
     dbg && console.log('handleInputAmountFocusedOffered():focused=', focused, ',isOffer=', isOffer, ',isAccept=', isAccept)
     setInputAmountFocusedOffer(focused)
@@ -383,7 +384,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
     setAmountOffer(0)
     //dbg = false
   }
-  
+
   const handleSearchBarFocusedOffered = (focused: boolean, isOffer: boolean, isAccept: boolean) => {
     dbg && console.log('ExchangePage:handleSearchBarFocusedOffered():focused=', focused, ',isOffer=', isOffer, ',isAccept=', isAccept)
     setSearchBarFocusedOffer(true)
@@ -466,7 +467,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
     updateStringRecord(selectedAssetIdOffer, REMAINDER_TEXT, setBalanceTextToNameMapOffered)
     updateStringRecord(selectedAssetIdOffer, OFFERED_TEXT, setBalanceTextToWithAmountNameMapOffered)
   };
-  
+
   // Extra args used by AssetTable component call
   const handleAddAssetsAccepted = (amountAccept: number) => {
     dbg && console.log('handleAddAssetsAccepted()')
@@ -550,13 +551,13 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
           </Typography>
           {/*{assetsOffered.length > 0  && (assetListUpdatedOffered || (doAssetBalanceOffered && selectedAssetIdOffer !== '' && amountOffer > 0))
             {doAssetBalanceOffered && (<AssetBalance*/}
-            {<AssetBalance
+          {<AssetBalance
             dbg={true}
             assetId={selectedAssetIdOffer}
             newAmount={amountOffer}
             assetListUpdated={assetListUpdatedOffered}
             assets={assetsOffered}
-            doAssetBalance={doAssetBalanceOffered}       
+            doAssetBalance={doAssetBalanceOffered}
             //removeAssetBalance={removeAssetBalanceOffered}
             setAssetListUpdated={setAssetListUpdatedOffered}
             setAssets={setAssetsOffered}
@@ -568,14 +569,14 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
           />}
           <SearchBar
             dbg={false}
-            isOffer={ true }
-            isAccept={ false }
+            isOffer={true}
+            isAccept={false}
             handleSearchBar={handleSearchBarOffered}
             handleClearSearchBar={handleClearSearchBarOffer}
             handleSearchBarFocused={handleSearchBarFocusedOffered}
           />
           {showProgressOffer && <LinearProgress />}
-          {assetTableOffered && (<AssetsTable 
+          {assetTableOffered && (<AssetsTable
             dbg={false}
             isVisible={true}
             isOffer={true}
@@ -588,7 +589,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
             setSelectedAssetId={setSelectedAssetIdOffer}
             removeAssetWithAmount={removeAssetWithAmountOffer}
             handleAssetTableFocused={handleAssetTableFocusedOffered}
-            
+
           />)}
           {selectedAssetIdOffer && (
             <Grid container spacing={2}>
@@ -648,7 +649,7 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
             setDoAssetBalance={setDoAssetBalanceAccepted}
             setAvailable={setAvailableAccepted}
             setRemainder={setRemainderAccepted}
-            />
+          />
           <SearchBar
             dbg={false}
             isAccept={true}
@@ -708,39 +709,39 @@ const ExchangePage: React.FC<ExhangePageProps> = ({ btms }) => {
         </Grid>
 
         {/* Additional Assets Table (if needed) */}
-          <Grid item xs={6}>
-            <AssetsTable
-              dbg={false}
-              isVisible={assetsWithAmountsOffered.length > 0 ? true : false}
-              isOffer={true}
-              isAccept={false}
-              btms={btms}
-              assets={assetsWithAmountsOffered}
-              balanceTextToNameMap={balanceTextToWithAmountNameMapOffered}
-              setAssetTableFocused={setAssetTableFocusedOffer}
-              handleSelectedAsset={handleSelectedAssetOffer}
-              setSelectedAssetId={setSelectedAssetIdOffer}
-              removeAssetWithAmount={removeAssetWithAmountOffer}
-              handleAssetTableFocused={handleAssetTableFocusedOffered}
-              />
-          </Grid>
+        <Grid item xs={6}>
+          <AssetsTable
+            dbg={false}
+            isVisible={assetsWithAmountsOffered.length > 0 ? true : false}
+            isOffer={true}
+            isAccept={false}
+            btms={btms}
+            assets={assetsWithAmountsOffered}
+            balanceTextToNameMap={balanceTextToWithAmountNameMapOffered}
+            setAssetTableFocused={setAssetTableFocusedOffer}
+            handleSelectedAsset={handleSelectedAssetOffer}
+            setSelectedAssetId={setSelectedAssetIdOffer}
+            removeAssetWithAmount={removeAssetWithAmountOffer}
+            handleAssetTableFocused={handleAssetTableFocusedOffered}
+          />
+        </Grid>
         {/* Additional Assets Table (if needed) */}
-          <Grid item xs={6}>
-            <AssetsTable
-              dbg={false}
-              isVisible={assetsWithAmountsAccepted.length > 0 ? true : false}
-              isAccept={true}
-              isOffer={false}
-              btms={btms}
-              assets={assetsWithAmountsAccepted}
-              balanceTextToNameMap={balanceTextToWithAmountNameMapAccepted}
-              setAssetTableFocused={setAssetTableFocusedAccept}
-              handleSelectedAsset={handleSelectedAssetAccept}
-              setSelectedAssetId={setSelectedAssetIdAccept}
-              removeAssetWithAmount={removeAssetWithAmountAccept}
-              handleAssetTableFocused={handleAssetTableFocusedAccepted}
-            />
-          </Grid>
+        <Grid item xs={6}>
+          <AssetsTable
+            dbg={false}
+            isVisible={assetsWithAmountsAccepted.length > 0 ? true : false}
+            isAccept={true}
+            isOffer={false}
+            btms={btms}
+            assets={assetsWithAmountsAccepted}
+            balanceTextToNameMap={balanceTextToWithAmountNameMapAccepted}
+            setAssetTableFocused={setAssetTableFocusedAccept}
+            handleSelectedAsset={handleSelectedAssetAccept}
+            setSelectedAssetId={setSelectedAssetIdAccept}
+            removeAssetWithAmount={removeAssetWithAmountAccept}
+            handleAssetTableFocused={handleAssetTableFocusedAccepted}
+          />
+        </Grid>
       </Grid>
     </ThemeProvider>
   );
