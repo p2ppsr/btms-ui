@@ -1,4 +1,4 @@
-import { BTMS } from 'btms-core'
+import { BTMS } from '../../../btms-core/out/src';
 
 const ENV = location.host.startsWith('staging') || location.host.startsWith('localhost') ? 'test' : 'prod'
 

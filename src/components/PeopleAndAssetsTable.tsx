@@ -7,6 +7,7 @@ import {
   TableRow,
   Grid,
   IconButton,
+  useTheme,
   Box,
 } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
@@ -18,23 +19,25 @@ import { Person } from '../utils/general'
 
 const mockTokenDefaultImage = 'mock/tokenIcon-A1.png'
 
-interface AssetsTableProps {
+interface PeopleAndAssetsTableProps {
 	dbg?: boolean
   isAssetFilter?: boolean
-  isPersonFilter?: boolean
+  isPeopleFilter?: boolean
   isVisible?: boolean
 	doLeaveRowSelected?: boolean
   isAssetNotDefined?: boolean
   label?: string
   assets: Asset[] | null
-  person?: Person[] | null
+  people?: Person[] | null
   balanceTextToNameMap?: Record<string, string>
 	rowSelectedAssetId?: { assetId: string; balance: number } | null
 	rowSelectedIdentity?: { identity: string; isTrusted: boolean } | null
   selectedElementId?: string
   mockTokenImages?: Record<string, string>
+  //mockTokenDefaultImage: string
 	setIsFocused?: React.Dispatch<React.SetStateAction<boolean>>
   handleSelectedAsset?: (assetId: string) => void
+  handleSelectedPerson?: (person: Person) => void
   setRowSelectedAssetId?: React.Dispatch<React.SetStateAction<{ assetId: string; balance: number } | null>>
   setRowSelectedIdentity?: React.Dispatch<React.SetStateAction<{ identity: string; isTrusted: boolean } | null>>
   removeAsset?: (assetId: string) => void
@@ -42,16 +45,16 @@ interface AssetsTableProps {
 	setDoLeaveRowSelected?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const AssetsTable: React.FC<AssetsTableProps> = ({
+const PeopleAndAssetsTable: React.FC<PeopleAndAssetsTableProps> = ({
   dbg = false,
   isAssetFilter = true,
-  isPersonFilter = false,
+  isPeopleFilter = false,
   isVisible = true,
 	doLeaveRowSelected = false,
   isAssetNotDefined = false,
   label = '',
   assets = [],
-  person = [],
+  people = [],
   balanceTextToNameMap = {},
   rowSelectedAssetId = null,
   rowSelectedIdentity = null,
@@ -59,13 +62,13 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
   mockTokenImages = [],
   setIsFocused = () => {},
   handleSelectedAsset = () => {},
+  handleSelectedPerson = () => {},
   setRowSelectedAssetId = () => {},
   setRowSelectedIdentity = () => {},
   removeAsset = () => {},
   onRowAssetClick = () => {},
 	setDoLeaveRowSelected = () => {},
 }) => {
-
   const [$selectedElementId, setSelectedElementId] = useState<string>('')
   const [isClickedTable, setIsClickedTable] = useState(false)
   const [isHoveredTable, setIsHoveredTable] = useState<boolean>(false)
@@ -75,7 +78,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
 
   const combined: AssetOrPerson[] = [
     ...(assets?.map(asset => ({ type: 'asset', data: asset })) || []),
-    ...(person?.map(person => ({ type: 'person', data: person })) || [])
+    ...(people?.map(person => ({ type: 'person', data: person })) || [])
   ] as Array<{ type: 'asset'; data: Asset } | { type: 'person'; data: Person }>
 
   useEffect(() => {
@@ -87,8 +90,10 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
 		return clicked
 	}
 
-	const handleRowClickPerson = (identity: string, isTrusted: boolean | undefined) => {
+	const handleRowClickPerson = (person: Person) => {
+    //onRowPersonClick(identity, isTrusted) // Notify parent of row click
     setIsFocused(true)
+    handleSelectedPerson(person)
   }
 
   const isClickedRowAsset = (assetId: string, balance: number) => {
@@ -138,7 +143,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (tableContainerRef.current && !tableContainerRef.current.contains(event.target as Node)) {
         setIsClickedTable(false)
-        setIsHoveredTable(false)
+        setIsHoveredTable(false) // Reset both clicked and hovered states
       }
     }
 
@@ -148,6 +153,30 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  const squareStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    //backgroundColor: '#fff',
+    width: '4em',
+    height: '4em',
+    borderRadius: '0.2em',
+    //marginRight: '1em',
+    //overflow: 'hidden' // To ensure the image is contained within the circle
+  }
+
+  const circleStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    //backgroundColor: '#fff',
+    width: '4em',
+    height: '4em',
+    borderRadius: '50%',
+    //marginRight: '1em',
+    overflow: 'hidden' // To ensure the image is contained within the circle
+  }
 
   return (
     <ThemeProvider theme={web3Theme}>
@@ -207,12 +236,14 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
                             <Grid item xs={12} container spacing={2} alignItems='center'>
                               <Grid item xs={2} paddingTop='1em'>
                                 {asset.name !== 'USD' && (
-                                  <img src={iconURL} alt={asset.name} 
-                                  style={{ 
-                                    width: '3em',
-                                    height: '3em',
-                                    paddingRight: '0.3em' 
-                                  }} />
+                                  <div style={squareStyle}>
+                                    <img src={iconURL} alt={asset.name} 
+                                    style={{ 
+                                      width: '100%',
+                                      height: '100%',
+                                      //paddingRight: '0.3em' 
+                                    }} />
+                                  </div>
                                 )}
                               </Grid>
                               <Grid item xs={9}>
@@ -249,7 +280,7 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
                         </TableRow>
                       )
                     }
-                  } else if(isPersonFilter) {
+                  } else if(isPeopleFilter) {
                     const person = item.data as Person
                     if (person.identity !== undefined) {
                       const iconURL = person.iconURL 
@@ -258,27 +289,27 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
                           key={person.identity}
                           onMouseEnter={() => handleMouseEnterTableRow(person.identity)}
                           onMouseLeave={handleMouseLeaveTableRow}
-                          onClick={() => handleRowClickPerson(person.identity, person.isTrusted)}
+                          onClick={() => handleRowClickPerson(person)}
                           style={{
                             //padding: '0px',
                             cursor: 'pointer',
-                            //color: isClickedRowPerson(person.assetId, person.balance) ? '#000' : '#fff',
-                            //backgroundColor: isClickedRowPerson(person.assetId, person.balance) 
-                            //</TableBody>? '#fff' : isHoveredRow === person.assetId ? '#2b2b2b' 
-                            //: 'transparent',
-
-                            //backgroundColor: isClickedRowPerson(person.assetId, person.balance) ? '#fff' : 'transparent',
+                            color: isClickedRowPerson(person.identity, person.isTrusted) ? '#000' : '#fff',
+                            backgroundColor: isClickedRowPerson(person.identity, person.isTrusted) 
+                            ? '#fff' : isHoveredRow === person.identity ? '#2b2b2b' 
+                            : 'transparent',
                           }}
                         >
                           <TableCell style={{ color: isClickedRowPerson(person.identity, person.isTrusted) ? '#000' : '#fff' }}>
                             <Grid item xs={12} container spacing={2} alignItems='center'>
                               <Grid item xs={2} paddingTop='1em'>
-                                <img src={iconURL} alt={`${person.firstName} ${person.lastName}`} 
-                                style={{ 
-                                  width: '3em',
-                                  height: '3em',
-                                  paddingRight: '0.3em' 
-                                }} />
+                                <div style={circleStyle}>
+                                  <img src={iconURL} alt={`${person.firstName} ${person.lastName}`} 
+                                    style={{ 
+                                      width: '100%',
+                                      height: '100%'
+                                      //paddingRight: '0.3em'
+                                    }} />
+                                </div>
                               </Grid>
                               <Grid item xs={9}>
                                 <div>
@@ -302,4 +333,4 @@ const AssetsTable: React.FC<AssetsTableProps> = ({
   )
 }
 
-export default AssetsTable
+export default PeopleAndAssetsTable

@@ -1,124 +1,109 @@
-import React, { useEffect, useState } from 'react';
-import { TextField, IconButton, InputAdornment } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
-import { ThemeProvider, useTheme } from '@mui/material/styles';
-import web3Theme from '../theme';
+import React, { useEffect, useState } from 'react'
+import { TextField, IconButton, InputAdornment, LinearProgress, Box } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import SearchIcon from '@mui/icons-material/Search'
+import { ThemeProvider, useTheme } from '@mui/material/styles'
+import web3Theme from '../theme'
+import { BORDER_RADIUS } from '../utils/constants'
 
 interface SearchBarProps {
-	dbg?: boolean
-	isOffer: boolean
-	isAccept: boolean
-	handleSearchBar: (text: string) => void
-  handleClearSearchBar: () => void;
-	handleSearchBarFocused: (focused: boolean, isOffer: boolean, isAccept: boolean) => void
-}
-
-const fieldStyle = {
-  borderRadius: '10px',
+  dbg?: boolean
+  isVisible?: boolean
+  initialText?: string
+  value: string
+  isDisabled?: boolean
+  showProgress: boolean
+  handleOnChange: (text: string) => void
+  handleClear: () => void
+  setValue: React.Dispatch<React.SetStateAction<string>>
+  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
-	dbg=false,
-	isOffer,
-	isAccept,
-	handleSearchBar,
-  handleClearSearchBar,
-	handleSearchBarFocused
+  dbg = false,
+  isVisible = true,
+  initialText = '',
+  value,
+  isDisabled,
+  showProgress,
+  handleOnChange,
+  handleClear,
+  setValue,
+  setIsFocused,
 }) => {
-	dbg && console.log('SearchBar:isOffer=', isOffer, ',isAccept=', isAccept)
-	isOffer === isAccept && console.error('Can only have isOffer true or isAccept true')
-
-	const [$isOffer, $setIsOffer] = useState<boolean>(isOffer)
-  const [$isAccept, $setIsAccept] = useState<boolean>(isAccept)
-  const [text, setText] = useState<string>('');
-	const [focused, setFocused] = useState<boolean>(false)
+  const [isFocused, setIsFocusedState] = useState<boolean>(false)
 
   useEffect(() => {
-    $setIsOffer(isOffer);
-    $setIsAccept(isAccept);
-  }, [isOffer, isAccept]);
+    setIsFocusedState(isFocused)
+  }, [isFocused])
 
-  const handleOnChange = (text: string) => {
-		dbg && console.log('SearchBar:handleOnChange():text:', text, ',$isOffer=', $isOffer, ',$isAccept=', $isAccept)
-		setFocused(true)
-	  handleSearchBarFocused(true, $isOffer, $isAccept); // Call the parent handler to update the search field
-		setText(text);
-    handleSearchBar(text); // Call the parent handler to update the search field
-  };
+  const handleOnClick = () => {
+    if (value === initialText) {
+      setValue('')
+    }
+    handleOnFocus()
+  }
 
-	const handleOnFocus = () => {
-		dbg && console.log('SearchBar:handleOnFocus():$isOffer=', $isOffer, ',$isAccept=', $isAccept)
-    setFocused(true);
-	  handleSearchBarFocused(true, $isOffer, $isAccept); // Call the parent handler to update the search field
-	};
+  const handleOnFocus = () => {
+    setIsFocusedState(true)
+    setIsFocused(true)
+  }
 
-	const handleOnBlur = () => {
-		dbg && console.log('SearchBar:handleOnClick():$isOffer=', $isOffer, ',$isAccept=', $isAccept)
-    setFocused(false);
-	  handleSearchBarFocused(false, $isOffer, $isAccept); // Call the parent handler to update the search field
-	};
+  const handleOnBlur = () => {
+    setIsFocusedState(false)
+    setIsFocused(false)
+  }
 
-	const handleOnMouseEnter = () => {
-		dbg && console.log('SearchBar:handleOnMouseEnter():$isOffer=', $isOffer, ',$isAccept=', $isAccept)
-    setFocused(true);
-	  //handleSearchBarFocused(true, $isOffer, $isAccept); // Call the parent handler to update the search field
-	};
+  const handleOnClickClose = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation() // Prevent the TextField onClick event from triggering
+    setValue('')
+    handleClear()
+  }
 
-	const handleOnMouseLeave = () => {
-		dbg && console.log('SearchBar:handleOnMouseLeave():$isOffer=', $isOffer, ',$isAccept=', $isAccept)
-    setFocused(false);
-	  //handleSearchBarFocused(true, $isOffer, $isAccept); // Call the parent handler to update the search field
-	};
+  const theme = useTheme()
 
-	const handleOnClick = () => {
-		dbg && console.log('SearchBar:handleOnClick():$isOffer=', $isOffer, ',$isAccept=', $isAccept)
-    setFocused(true);
-	  handleSearchBarFocused(true, $isOffer, $isAccept); // Call the parent handler to update the search field
-	};
-
-  const handleOnClickClose = () => {
-		dbg && console.log('SearchBar:handleOnClickClose()')
-	  handleSearchBarFocused(true, $isOffer, $isAccept); // Call the parent handler to update the search field
-		setText('');
-    handleClearSearchBar();
-  };
-
-	const theme = useTheme();
-
-	return (
+  return (
     <ThemeProvider theme={web3Theme}>
-			<TextField
-				size='small'
-				variant='outlined'
-				fullWidth
-				value={text}
-				onMouseEnter={handleOnMouseEnter}
-				onMouseLeave={handleOnMouseLeave}
-				onClick={handleOnClick}
-				InputProps={{
-					style: fieldStyle,
-					startAdornment: (
-						<InputAdornment position='start'>
-							{!focused && text === '' && (<IconButton  size='small' disabled={!focused}>
-								<SearchIcon/>
-							</IconButton>)}
-						</InputAdornment>
-					),
-					endAdornment: (
-						<InputAdornment position='end'>
-							{text && (<IconButton onClick={handleOnClickClose} size='small' disabled={!text}>
-								<CloseIcon />
-							</IconButton>)}
-						</InputAdornment>
-					),
-				}}
-				onFocus={() => handleOnFocus}
-				onBlur={() => handleOnBlur}
-				onChange={(e) => handleOnChange(e.target.value)}
-			/>
-		</ThemeProvider>
-  );
-};
+      <Box>
+        <TextField
+          style={{
+            visibility: isVisible ? 'visible' : 'hidden',
+            display: isVisible ? 'block' : 'none',
+          }}
+          size='small'
+          variant='outlined'
+          fullWidth
+          value={value}
+          onClick={handleOnClick}
+          InputProps={{
+            style: { borderRadius: BORDER_RADIUS },
+            startAdornment: (
+              <InputAdornment position='start'>
+                {!isFocused && value === '' && (
+                  <IconButton size='small' disabled={!isFocused}>
+                    <SearchIcon />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position='end'>
+                {value && (
+                  <IconButton onClick={handleOnClickClose} size='small' disabled={!value}>
+                    <CloseIcon />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+          }}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onChange={(e) => handleOnChange(e.target.value)}
+        />
+        {showProgress && <LinearProgress />}
+      </Box>
+    </ThemeProvider>
+  )
+}
 
-export default SearchBar;
+export default SearchBar

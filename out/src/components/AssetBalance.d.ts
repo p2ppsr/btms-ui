@@ -9,7 +9,7 @@ interface AssetBalanceProps {
     doAssetBalance: boolean;
     setAssetListUpdated: React.Dispatch<React.SetStateAction<boolean>>;
     setAssets: React.Dispatch<React.SetStateAction<Asset[]>>;
-    unsetResetInputAmount: () => void;
+    unsetResetInputs: () => void;
     updateRemainder: (remainder: number) => void;
     setDoAssetBalance: React.Dispatch<React.SetStateAction<boolean>>;
     setAvailable: React.Dispatch<React.SetStateAction<{

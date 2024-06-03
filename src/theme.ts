@@ -1,4 +1,22 @@
 import { createTheme } from '@mui/material/styles';
+import { BORDER_RADIUS } from './utils/constants';
+
+export const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#0c0d0f',
+    },
+    background: {
+      default: '#0c0d0f',
+      paper: '#1d1d1d',
+    },
+    text: {
+      primary: '#fff',
+      secondary: '#b0b0b0',
+    },
+  },
+})
 
 // Define a custom theme with dark mode configuration
 const web3Theme = createTheme({
@@ -28,7 +46,7 @@ const web3Theme = createTheme({
     },
     button: {
       textTransform: 'none', // Buttons with regular casing
-      borderRadius: '15px', 
+      borderRadius: BORDER_RADIUS, 
     },
   },
   components: {
@@ -46,7 +64,7 @@ const web3Theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '15px', // Maximum radius for curved buttons
+          borderRadius: BORDER_RADIUS, // Maximum radius for curved buttons
           whiteSpace: 'nowrap'
         },
       },

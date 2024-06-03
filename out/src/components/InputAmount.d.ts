@@ -1,5 +1,5 @@
 import React from 'react';
-interface InputAmountProps {
+interface InputsProps {
     dbg?: boolean;
     isOffer: boolean;
     isAccept: boolean;
@@ -9,10 +9,10 @@ interface InputAmountProps {
     assetSelected: boolean;
     resetField: boolean;
     setAddAssetDisabled: React.Dispatch<React.SetStateAction<boolean>>;
-    unsetResetInputAmount: () => void;
+    unsetResetInputs: () => void;
     handleAddAssets: (amount: number) => void;
-    handleInputAmountFocused: (focused: boolean, isOffer: boolean, isAccept: boolean) => void;
+    handleInputsFocused: (focused: boolean, isOffer: boolean, isAccept: boolean) => void;
 }
-declare const InputAmount: React.FC<InputAmountProps>;
-export default InputAmount;
-//# sourceMappingURL=InputAmount.d.ts.map
+declare const Inputs: React.FC<InputsProps>;
+export default Inputs;
+//# sourceMappingURL=Inputs.d.ts.map
